@@ -1,0 +1,56 @@
+1. Técnico de Manutenção:
+
+Nome fictício: Carlos Henrique Souza
+
+Idade: 32 anos
+
+Profissão: Técnico de Manutenção Industrial
+
+Objetivos: Realizar manutenções preventivas e corretivas, reduzir o tempo de máquinas paradas
+e garantir o bom funcionamento dos equipamentos.
+
+Necessidades: Consultar ordens de serviço (OS), visualizar prazos e prioridades, registrar
+peças utilizadas e atualizar o status das atividades.
+
+Dificuldades: Dificuldade para consultar o histórico das máquinas, receber informações
+incompletas sobre os problemas e preencher formulários em papel.
+
+Como utiliza o sistema: Acessa as ordens de serviço atribuídas, consulta informações
+dos equipamentos, registra peças utilizadas, descreve os serviços executados e atualiza o status das ordens de serviço.
+
+2. Gestor / Supervisor de Manutenção:
+
+Nome fictício: Mariana Oliveira Costa
+
+Idade: 40 anos
+
+Profissão: Supervisora de Manutenção Industrial
+
+Objetivos: Reduzir as paradas não planejadas, melhorar a produtividade, controlar custos e aumentar a vida útil dos equipamentos.
+
+Necessidades: Abrir e aprovar ordens de serviço, definir cronogramas preventivos, acompanhar as atividades
+da equipe e visualizar indicadores como MTBF e MTTR.
+
+Dificuldades: Dificuldade para reunir informações de diferentes planilhas, identificar máquinas com falhas
+frequentes e acompanhar atrasos nas manutenções.
+
+Como utiliza o sistema: Utiliza o dashboard para acompanhar as ordens de serviço, distribuir tarefas, programar
+manutenções preventivas, receber alertas automáticos e gerar relatórios para apoiar a tomada de decisões.
+
+3. Administrador do Sistema:
+
+Nome fictício: Rafael Mendes Ferreira
+
+Idade: 35 anos
+
+Profissão: Analista de Sistemas
+
+Objetivos: Garantir o funcionamento adequado do sistema, manter os dados organizados e seguros e controlar os acessos dos usuários.
+
+Necessidades: Cadastrar máquinas, setores, técnicos e tipos de manutenção, gerenciar usuários e permissões e manter a integridade dos dados.
+
+Dificuldades: Evitar cadastros duplicados, corrigir informações incorretas, controlar os níveis de acesso
+e garantir a consistência das informações armazenadas.
+
+Como utiliza o sistema: Acessa o módulo administrativo para cadastrar e atualizar informações, gerenciar usuários,
+configurar permissões e manter os registros do sistema organizados.
