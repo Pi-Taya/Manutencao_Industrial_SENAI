@@ -1,26 +1,38 @@
 # Manutenção Industrial
+
 Sistema de manutenção industrial para o projeto final do curso de Desenvolvimento de Sistemas do SENAI
-Atualizar o Readme.md conforme instruções abaixo (deixar as marcações hashtag):
+
 # Nome do Projeto
 
+  PiTaya - Sistema Inteligente de Manutenção Industrial
+  
 ## 📌 Escopo do Projeto
 
 ### Problema
-Qual problema o sistema pretende resolver?
+
+Linhas de produção industriais sofrem com paradas não planejadas, falta de rastreabilidade na execução de ordens de serviço, falhas na gestão de estoque de peças de reposição e ausência de histórico estruturado sobre falhas de maquinários, gerando prejuízos financeiros e atrasos operacionais.
 
 ### Objetivo
-Qual é o objetivo principal do sistema?
+
+Desenvolver uma solução centralizada e padronizada para gestão e controle de manutenções corretivas e preventivas, otimizando o fluxo de trabalho técnico, o controle de insumos e o cálculo de indicadores chave de desempenho (como MTTR e MTBF).
 
 ### Público-alvo
-Quem utilizará o sistema?
+
+- **Técnicos de Manutenção**: Responsáveis pelo atendimento, execução de checklists e pareceres técnicos nas Ordens de Serviço (OS).
+- **Gestores de Manutenção**: Responsáveis pela aprovação, distribuição de chamados, agendamento de preventivas e análise de relatórios operacionais.
+- **Administradores do Sistema**: Responsáveis pela parametrização de perfis, usuários, máquinas, fornecedores e cadastros de estoque.
 
 ### Solução
-Como o sistema pretende solucionar o problema?
+
+Um sistema web intuitivo e responsivo integrado a um banco de dados relacional normalizado (1FN/3FN) com controle de acesso baseado em funções (RBAC). A plataforma automatiza a geração de rotinas preventivas via calendário, gerencia a requisição de peças em tempo real, registra o histórico completo de intervenções técnicas e permite a emissão de pareceres conclusivos após o reparo dos ativos.
 
 ### Principais funcionalidades
-- Funcionalidade 1
-- Funcionalidade 2
-- Funcionalidade 3
+
+- **Gestão Completa de Ordens de Serviço (OS)**: Abertura, priorização por tempo limite (SLA), atribuição de responsáveis e acompanhamento de status em tempo real.
+- **Cronograma de Manutenção Preventiva**: Agendamento automático com periodicidade configurável (dias) vinculado a calendários e planos de verificação.
+- **Listas de Verificação (Checklists Padrão)**: Padronização dos passos de inspeção por tipo de manutenção para garantia de qualidade na execução técnica.
+- **Controle de Estoque e Peças de Reposição**: Associação de insumos às OSs com atualização automática de saldos e controle de status do material.
+- **Rastreabilidade e Laudos Técnicos**: Registro detalhado de pareceres técnicos com situação pós-reparo e histórico cronológico de alteração de estados da OS.
 
 ## 🎨 Design System
 
@@ -43,7 +55,9 @@ Descrição e aplicação do logotipo.
 - HTML
 - CSS
 - JavaScript
-- ...
+- PHP
+- JSON
+- phpMyAdmin
 
 ## 👥 Equipe
 - Leonardo
