@@ -61,26 +61,38 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 7. Setores
-        $setor = Setor::firstOrCreate(
-            ['nome_setor' => 'Manutenção'],
-            ['descricao' => 'Setor responsável pela manutenção industrial']
-        );
-        Setor::firstOrCreate(['nome_setor' => 'Usinagem'], ['descricao' => 'Usinagem de peças']);
-        Setor::firstOrCreate(['nome_setor' => 'Montagem'], ['descricao' => 'Linha de montagem']);
+        // 7. Setores Industriais Ampliados
+        $setores = [
+            ['nome_setor' => 'Manutenção', 'descricao' => 'Setor responsável pela manutenção industrial'],
+            ['nome_setor' => 'Usinagem', 'descricao' => 'Usinagem de peças e centros CNC'],
+            ['nome_setor' => 'Caldeiraria e Solda', 'descricao' => 'Corte, dobra e caldeiraria pesada'],
+            ['nome_setor' => 'Estamparia e Injeção', 'descricao' => 'Prensas hidráulicas e injetoras'],
+            ['nome_setor' => 'Montagem', 'descricao' => 'Linha final de montagem'],
+            ['nome_setor' => 'Utilidades', 'descricao' => 'Central de compressores, caldeiras e chillers'],
+            ['nome_setor' => 'Almoxarifado', 'descricao' => 'Estoque de peças e matérias-primas'],
+            ['nome_setor' => 'Controle de Qualidade', 'descricao' => 'Laboratório de testes e metrologia'],
+        ];
+
+        foreach ($setores as $s) {
+            Setor::firstOrCreate(
+                ['nome_setor' => $s['nome_setor']],
+                ['descricao' => $s['descricao']]
+            );
+        }
 
         // 8. Busca de Referências para os Usuários
+        $setorManutencao = Setor::where('nome_setor', 'Manutenção')->firstOrFail();
         $turno = Turno::where('nome_turno', 'Manhã')->firstOrFail();
         $perfilGestor = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
         $perfilTecnico = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
 
-        // 9. Usuários de Teste (campo 'senha' em vez de 'password')
+        // 9. Usuários de Teste
         User::updateOrCreate(
             ['email' => 'gestor@manutencao.test'],
             [
                 'id_perfil'     => $perfilGestor->id_perfil,
                 'id_turno'      => $turno->id_turno,
-                'id_setor'      => $setor->id_setor,
+                'id_setor'      => $setorManutencao->id_setor,
                 'nome_usuario'  => 'Gestor de Teste',
                 'senha'         => 'password',
                 'especialidade' => 'Geral',
@@ -93,7 +105,7 @@ class DatabaseSeeder extends Seeder
             [
                 'id_perfil'     => $perfilTecnico->id_perfil,
                 'id_turno'      => $turno->id_turno,
-                'id_setor'      => $setor->id_setor,
+                'id_setor'      => $setorManutencao->id_setor,
                 'nome_usuario'  => 'Técnico de Teste',
                 'senha'         => 'password',
                 'especialidade' => 'Mecânica',

@@ -13,7 +13,8 @@ class MaquinaController extends Controller
 {
     public function index()
     {
-        $maquinas = Maquina::with(['setor', 'statusMaquina', 'modelo', 'fabricante'])->paginate(10);
+        $maquinas = Maquina::with(['modelo', 'setor', 'fabricante', 'statusMaquina'])->paginate(10);
+
         return view('maquinas.index', compact('maquinas'));
     }
 

@@ -28,13 +28,20 @@
         <tbody>
             @forelse($maquinas as $maquina)
                 <tr>
-                    <td>{{ $maquina->codigo_identificador }}</td>
-                    <td>{{ $maquina->nome }}</td>
-                    <td>{{ $maquina->modelo ?? 'N/A' }}</td>
+                    {{-- Nomes exatos das colunas da migration --}}
+                    <td>{{ $maquina->codigo_tag }}</td>
+                    <td>{{ $maquina->nome_maquina }}</td>
+
+                    {{-- Propriedades dos relacionamentos --}}
+                    <td>{{ $maquina->modelo->nome_modelo ?? 'N/A' }}</td>
                     <td>{{ $maquina->setor->nome_setor ?? 'N/A' }}</td>
-                    <td>{{ $maquina->fabricante ?? 'N/A' }}</td>
+                    <td>{{ $maquina->fabricante->nome_fabricante ?? 'N/A' }}</td>
+
+                    {{-- Data formatada --}}
                     <td>{{ $maquina->data_aquisicao ? \Carbon\Carbon::parse($maquina->data_aquisicao)->format('d/m/Y') : 'N/A' }}</td>
-                    <td>{{ $maquina->statusMaquina->nome_status ?? 'N/A' }}</td>
+
+                    {{-- Campo correto da tabela status_maquinas --}}
+                    <td>{{ $maquina->statusMaquina->estado_da_maquina ?? 'N/A' }}</td>
                 </tr>
             @empty
                 <tr>
