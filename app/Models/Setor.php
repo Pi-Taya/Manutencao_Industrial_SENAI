@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Setor extends Model
 {
-    protected $table = 'setors';
+    protected $table = 'setores';
 
     protected $primaryKey = 'id_setor';
+
+    public $timestamps = false;
 
     protected $fillable = ['nome_setor', 'descricao'];
 

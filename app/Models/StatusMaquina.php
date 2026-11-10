@@ -11,6 +11,8 @@ class StatusMaquina extends Model
 
     protected $primaryKey = 'id_status_maquina';
 
+    public $timestamps = false;
+
     protected $fillable = ['estado_da_maquina'];
 
     public function maquinas(): HasMany

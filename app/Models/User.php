@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,50 +9,42 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     protected $table = 'users';
 
     protected $primaryKey = 'id_usuario';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'id_perfil',
         'id_turno',
         'id_setor',
         'nome_usuario',
         'email',
-        'password',
+        'senha',
         'especialidade',
         'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
-        'password',
+        'senha',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
+            'senha' => 'hashed',
             'status' => 'boolean',
         ];
+    }
+
+    /**
+     * Mapeia o campo de senha da autenticação para 'senha'
+     */
+    public function getAuthPasswordName(): string
+    {
+        return 'senha';
     }
 
     public function perfil()

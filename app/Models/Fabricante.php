@@ -11,6 +11,8 @@ class Fabricante extends Model
 
     protected $primaryKey = 'id_fabricante';
 
+    public $timestamps = false;
+
     protected $fillable = ['nome_fabricante'];
 
     public function maquinas(): HasMany

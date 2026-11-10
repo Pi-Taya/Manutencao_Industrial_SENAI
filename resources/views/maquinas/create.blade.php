@@ -20,28 +20,38 @@
     <form action="{{ route('maquinas.store') }}" method="POST">
         @csrf
         <div>
-            <label>Código Identificador *:</label><br>
-            <input type="text" name="codigo_identificador" value="{{ old('codigo_identificador') }}" required>
+            <label>Código TAG *:</label><br>
+            <input type="text" name="codigo_tag" value="{{ old('codigo_tag') }}" required>
         </div><br>
 
         <div>
             <label>Nome da Máquina *:</label><br>
-            <input type="text" name="nome" value="{{ old('nome') }}" required>
+            <input type="text" name="nome_maquina" value="{{ old('nome_maquina') }}" required>
         </div><br>
 
         <div>
-            <label>Modelo:</label><br>
-            <input type="text" name="modelo" value="{{ old('modelo') }}">
+            <label>Modelo *:</label><br>
+            <select name="id_modelo" required>
+                <option value="">Selecione o Modelo</option>
+                @foreach($modelos as $modelo)
+                    <option value="{{ $modelo->id_modelo }}">{{ $modelo->nome_modelo }}</option>
+                @endforeach
+            </select>
         </div><br>
 
         <div>
-            <label>Fabricante:</label><br>
-            <input type="text" name="fabricante" value="{{ old('fabricante') }}">
+            <label>Fabricante *:</label><br>
+            <select name="id_fabricante" required>
+                <option value="">Selecione o Fabricante</option>
+                @foreach($fabricantes as $fab)
+                    <option value="{{ $fab->id_fabricante }}">{{ $fab->nome_fabricante }}</option>
+                @endforeach
+            </select>
         </div><br>
 
         <div>
-            <label>Data de Aquisição:</label><br>
-            <input type="date" name="data_aquisicao" value="{{ old('data_aquisicao') }}">
+            <label>Data de Aquisição *:</label><br>
+            <input type="date" name="data_aquisicao" value="{{ old('data_aquisicao') }}" required>
         </div><br>
 
         <div>
@@ -59,7 +69,7 @@
             <select name="id_status_maquina" required>
                 <option value="">Selecione o Status</option>
                 @foreach($statusList as $status)
-                    <option value="{{ $status->id_status_maquina }}">{{ $status->nome_status }}</option>
+                    <option value="{{ $status->id_status_maquina }}">{{ $status->estado_da_maquina }}</option>
                 @endforeach
             </select>
         </div><br>

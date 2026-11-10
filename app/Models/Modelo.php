@@ -11,6 +11,8 @@ class Modelo extends Model
 
     protected $primaryKey = 'id_modelo';
 
+    public $timestamps = false;
+
     protected $fillable = ['nome_modelo', 'ano_modelo'];
 
     protected function casts(): array

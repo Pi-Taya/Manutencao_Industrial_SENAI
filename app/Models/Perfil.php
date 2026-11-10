@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Perfil extends Model
 {
-    protected $table = 'perfils';
+    protected $table = 'perfis'; // <- Corrigido de 'perfils' para 'perfis'
 
     protected $primaryKey = 'id_perfil';
+
+    public $timestamps = false; // <- Adicionado para alinhar com o SQL sem created_at/updated_at
 
     protected $fillable = ['tipo_perfil'];
 

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('perfils', function (Blueprint $table) {
+        Schema::create('perfis', function (Blueprint $table) {
             $table->id('id_perfil');
-            $table->enum('tipo_perfil', ['Técnico', 'Gestor', 'Administrador']);
+            $table->string('tipo_perfil', 50);
             $table->timestamps();
         });
     }

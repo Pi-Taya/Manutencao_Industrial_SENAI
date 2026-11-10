@@ -6,29 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('parecer_tecnicos', function (Blueprint $table) {
             $table->id('id_parecer');
-            $table->foreignId('id_perfil')->constrained('perfils', 'id_perfil');
-            $table->dateTime('data_registro')->useCurrent();
-            $table->string('descricao_laudo', 255);
-            $table->enum('condicao_pos_reparo', [
-                'Operacional / Aprovado', 
-                'Operacional com Restrições / Parcial', 
-                'Aguardando Peça', 
-                'Condenado / Inoperante'
-            ]);
+            
+            // Chaves Estrangeiras
+            $table->unsignedBigInteger('id_perfil');
+            // adicione outras FKs da tabela aqui se houver (ex: id_maquina, id_os, etc)
+
+            $table->text('descricao_parecer');
             $table->timestamps();
+
+            // Constraint apontando para a tabela 'perfis'
+            $table->foreign('id_perfil')->references('id_perfil')->on('perfis')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('parecer_tecnicos');
