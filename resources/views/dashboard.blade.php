@@ -13,6 +13,9 @@
     <nav>
         <ul>
             <li><a href="{{ route('maquinas.index') }}">Gerenciar Máquinas</a></li>
+            <li><a href="{{ route('setores.index') }}">Gerenciar Setores</a></li>
+            <li><a href="{{ route('fabricantes.index') }}">Gerenciar Fabricantes</a></li>
+            <li><a href="{{ route('modelos.index') }}">Gerenciar Modelos</a></li>
         </ul>
     </nav>
 

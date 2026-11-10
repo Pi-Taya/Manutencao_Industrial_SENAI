@@ -20,12 +20,12 @@ class MaquinaController extends Controller
 
     public function create()
     {
-        $setores = Setor::all();
-        $statusList = StatusMaquina::all();
-        $modelos = Modelo::all();
+        $modelos    = Modelo::all();
         $fabricantes = Fabricante::all();
+        $setores    = Setor::all();
+        $statuses   = StatusMaquina::all(); // Atentar para o nome $statuses
 
-        return view('maquinas.create', compact('setores', 'statusList', 'modelos', 'fabricantes'));
+        return view('maquinas.create', compact('modelos', 'fabricantes', 'setores', 'statuses'));
     }
 
     public function store(Request $request)
