@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MaquinaController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas públicas de Autenticação
@@ -23,7 +24,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas de Técnicos, Gestores e Administradores
     Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
-        // Reservado para Ordens de Serviço, Máquinas e Apontamentos
+        Route::get('/maquinas', [MaquinaController::class, 'index'])->name('maquinas.index');
+        Route::get('/maquinas/criar', [MaquinaController::class, 'create'])->name('maquinas.create');
+        Route::post('/maquinas', [MaquinaController::class, 'store'])->name('maquinas.store');
     });
 
 });
