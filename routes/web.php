@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('modelos', ModeloController::class);
         
         // Gestão de Usuários e Técnicos (RF05)
-        Route::resource('users', UserController::class)->only(['index', 'create', 'store']);
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     });
 
 });

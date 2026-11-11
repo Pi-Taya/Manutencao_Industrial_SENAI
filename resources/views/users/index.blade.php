@@ -22,6 +22,8 @@
                 <th>Especialidade</th>
                 <th>Turno</th>
                 <th>Setor</th>
+                <th>Status</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -33,10 +35,14 @@
                     <td>{{ $u->especialidade ?? 'N/A' }}</td>
                     <td>{{ $u->turno->nome_turno ?? 'N/A' }}</td>
                     <td>{{ $u->setor->nome_setor ?? 'N/A' }}</td>
+                    <td>{{ $u->status ? 'Ativo' : 'Inativo' }}</td>
+                    <td>
+                        <a href="{{ route('users.edit', $u->id_usuario) }}">Editar</a>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">Nenhum usuário encontrado.</td>
+                    <td colspan="8">Nenhum usuário encontrado.</td>
                 </tr>
             @endforelse
         </tbody>

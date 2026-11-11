@@ -8,6 +8,7 @@ use App\Models\Turno;
 use App\Models\Setor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -15,7 +16,6 @@ class UserController extends Controller
     {
         $userLogado = Auth::user();
 
-        // Se for Gestor, visualiza apenas Técnicos. Se for Admin, visualiza todos.
         $usersQuery = User::with(['perfil', 'turno', 'setor']);
 
         if ($userLogado->perfil->tipo_perfil === 'Gestor') {
@@ -33,7 +33,6 @@ class UserController extends Controller
     {
         $userLogado = Auth::user();
 
-        // Admin pode cadastrar qualquer perfil, Gestor só pode cadastrar Técnico
         if ($userLogado->perfil->tipo_perfil === 'Administrador') {
             $perfis = Perfil::all();
         } else {
@@ -51,7 +50,6 @@ class UserController extends Controller
         $userLogado = Auth::user();
         $perfilSelecionado = Perfil::findOrFail($request->id_perfil);
 
-        // Bloqueio no backend: Gestor não pode cadastrar Admin ou Gestor
         if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilSelecionado->tipo_perfil !== 'Técnico') {
             return back()->withErrors(['id_perfil' => 'Gestores só podem cadastrar o perfil de Técnico.'])->withInput();
         }
@@ -69,7 +67,7 @@ class UserController extends Controller
         User::create([
             'nome_usuario'  => $validated['nome_usuario'],
             'email'         => $validated['email'],
-            'senha'         => $validated['senha'],
+            'senha'         => Hash::make($validated['senha']),
             'id_perfil'     => $validated['id_perfil'],
             'id_turno'      => $validated['id_turno'],
             'id_setor'      => $validated['id_setor'],
@@ -78,5 +76,69 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('users.index')->with('success', 'Usuário/Técnico cadastrado com sucesso!');
+    }
+
+    public function edit(string $id)
+    {
+        $userLogado = Auth::user();
+        $usuario = User::findOrFail($id);
+
+        // Bloqueio de acesso se um Gestor tentar editar um Admin/Gestor pela URL
+        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
+            abort(403, 'Ação não autorizada. Gestores só podem editar técnicos.');
+        }
+
+        if ($userLogado->perfil->tipo_perfil === 'Administrador') {
+            $perfis = Perfil::all();
+        } else {
+            $perfis = Perfil::where('tipo_perfil', 'Técnico')->get();
+        }
+
+        $turnos = Turno::all();
+        $setores = Setor::all();
+
+        return view('users.edit', compact('usuario', 'perfis', 'turnos', 'setores'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $userLogado = Auth::user();
+        $usuario = User::findOrFail($id);
+
+        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
+            abort(403, 'Ação não autorizada.');
+        }
+
+        $validated = $request->validate([
+            'nome_usuario'  => 'required|string|max:100',
+            'email'         => 'required|email|max:100|unique:users,email,' . $id . ',id_usuario',
+            'senha'         => 'nullable|string|min:6', // Senha é opcional na edição
+            'id_perfil'     => 'required|exists:perfis,id_perfil',
+            'id_turno'      => 'required|exists:turnos,id_turno',
+            'id_setor'      => 'required|exists:setores,id_setor',
+            'especialidade' => 'nullable|string|max:100',
+            'status'        => 'required|boolean',
+        ]);
+
+        $perfilSelecionado = Perfil::findOrFail($request->id_perfil);
+        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilSelecionado->tipo_perfil !== 'Técnico') {
+            return back()->withErrors(['id_perfil' => 'Gestores só podem atribuir o perfil de Técnico.'])->withInput();
+        }
+
+        $usuario->nome_usuario  = $validated['nome_usuario'];
+        $usuario->email         = $validated['email'];
+        $usuario->id_perfil     = $validated['id_perfil'];
+        $usuario->id_turno      = $validated['id_turno'];
+        $usuario->id_setor      = $validated['id_setor'];
+        $usuario->especialidade = $validated['especialidade'] ?? 'Geral';
+        $usuario->status        = $validated['status'];
+
+        if (!empty($validated['senha'])) {
+            $usuario->senha = Hash::make($validated['senha']);
+        }
+
+        $usuario->save();
+
+        return redirect()->route('users.index')->with('success', 'Usuário/Técnico atualizado com sucesso!');
     }
 }
