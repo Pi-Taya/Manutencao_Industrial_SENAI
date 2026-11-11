@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('modelos', function (Blueprint $table) {
             $table->id('id_modelo');
             $table->string('nome_modelo', 100);
-            $table->year('ano_modelo');
-            $table->timestamps();
+            $table->foreignId('id_fabricante')->constrained('fabricantes', 'id_fabricante')->onDelete('cascade');
+            $table->text('especificacoes_tecnicas')->nullable();
+            $table->integer('ano_modelo')->nullable();
         });
     }
 

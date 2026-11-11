@@ -12,6 +12,7 @@ use App\Models\Turno;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -43,21 +44,27 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Fabricantes
-        foreach (['WEG', 'Siemens', 'Romi', 'Bosch', 'Kuka'] as $nomeFabricante) {
-            Fabricante::firstOrCreate(['nome_fabricante' => $nomeFabricante]);
-        }
+        $fabRomi = Fabricante::firstOrCreate(['nome_fabricante' => 'Romi']);
+        $fabSiemens = Fabricante::firstOrCreate(['nome_fabricante' => 'Siemens']);
+        $fabKuka = Fabricante::firstOrCreate(['nome_fabricante' => 'Kuka']);
+        Fabricante::firstOrCreate(['nome_fabricante' => 'WEG']);
+        Fabricante::firstOrCreate(['nome_fabricante' => 'Bosch']);
 
-        // 6. Modelos
+        // 6. Modelos (com id_fabricante vinculado)
         $modelos = [
-            ['nome_modelo' => 'Torno CNC Galaxy', 'ano_modelo' => 2022],
-            ['nome_modelo' => 'Centro de Usinagem Discovery', 'ano_modelo' => 2021],
-            ['nome_modelo' => 'Prensa Hidráulica PH-100', 'ano_modelo' => 2020],
-            ['nome_modelo' => 'Robô Articulado KR6', 'ano_modelo' => 2023],
+            ['nome_modelo' => 'Torno CNC Galaxy', 'ano_modelo' => 2022, 'id_fabricante' => $fabRomi->id_fabricante],
+            ['nome_modelo' => 'Centro de Usinagem Discovery', 'ano_modelo' => 2021, 'id_fabricante' => $fabRomi->id_fabricante],
+            ['nome_modelo' => 'Prensa Hidráulica PH-100', 'ano_modelo' => 2020, 'id_fabricante' => $fabSiemens->id_fabricante],
+            ['nome_modelo' => 'Robô Articulado KR6', 'ano_modelo' => 2023, 'id_fabricante' => $fabKuka->id_fabricante],
         ];
+
         foreach ($modelos as $modelo) {
             Modelo::firstOrCreate(
                 ['nome_modelo' => $modelo['nome_modelo']],
-                ['ano_modelo' => $modelo['ano_modelo']]
+                [
+                    'ano_modelo'    => $modelo['ano_modelo'],
+                    'id_fabricante' => $modelo['id_fabricante'],
+                ]
             );
         }
 
@@ -80,13 +87,27 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 8. Busca de Referências para os Usuários
+        // 8. Busca de Referências
         $setorManutencao = Setor::where('nome_setor', 'Manutenção')->firstOrFail();
-        $turno = Turno::where('nome_turno', 'Manhã')->firstOrFail();
-        $perfilGestor = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
-        $perfilTecnico = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
+        $turno           = Turno::where('nome_turno', 'Manhã')->firstOrFail();
+        $perfilAdmin     = Perfil::where('tipo_perfil', 'Administrador')->firstOrFail();
+        $perfilGestor    = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
+        $perfilTecnico   = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
 
-        // 9. Usuários de Teste
+        // 9. Usuários de Teste e Administrador Padrão
+        User::updateOrCreate(
+            ['email' => 'admin@manutencao.test'],
+            [
+                'id_perfil'     => $perfilAdmin->id_perfil,
+                'id_turno'      => $turno->id_turno,
+                'id_setor'      => $setorManutencao->id_setor,
+                'nome_usuario'  => 'Administrador do Sistema',
+                'senha'         => Hash::make('password'),
+                'especialidade' => 'Geral',
+                'status'        => true,
+            ]
+        );
+
         User::updateOrCreate(
             ['email' => 'gestor@manutencao.test'],
             [
@@ -94,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 'id_turno'      => $turno->id_turno,
                 'id_setor'      => $setorManutencao->id_setor,
                 'nome_usuario'  => 'Gestor de Teste',
-                'senha'         => 'password',
+                'senha'         => Hash::make('password'),
                 'especialidade' => 'Geral',
                 'status'        => true,
             ]
@@ -107,7 +128,7 @@ class DatabaseSeeder extends Seeder
                 'id_turno'      => $turno->id_turno,
                 'id_setor'      => $setorManutencao->id_setor,
                 'nome_usuario'  => 'Técnico de Teste',
-                'senha'         => 'password',
+                'senha'         => Hash::make('password'),
                 'especialidade' => 'Mecânica',
                 'status'        => true,
             ]

@@ -12,10 +12,16 @@
     
     <nav>
         <ul>
+            <!-- Acesso geral para Técnicos, Gestores e Administradores -->
             <li><a href="{{ route('maquinas.index') }}">Gerenciar Máquinas</a></li>
-            <li><a href="{{ route('setores.index') }}">Gerenciar Setores</a></li>
-            <li><a href="{{ route('fabricantes.index') }}">Gerenciar Fabricantes</a></li>
-            <li><a href="{{ route('modelos.index') }}">Gerenciar Modelos</a></li>
+            
+            <!-- Acesso exclusivo para Gestores e Administradores -->
+            @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'Administrador']))
+                <li><a href="{{ route('users.index') }}">Gerenciar Usuários / Técnicos</a></li>
+                <li><a href="{{ route('setores.index') }}">Gerenciar Setores</a></li>
+                <li><a href="{{ route('fabricantes.index') }}">Gerenciar Fabricantes</a></li>
+                <li><a href="{{ route('modelos.index') }}">Gerenciar Modelos</a></li>
+            @endif
         </ul>
     </nav>
 

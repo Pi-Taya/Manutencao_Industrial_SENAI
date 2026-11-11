@@ -5,6 +5,7 @@ use App\Http\Controllers\MaquinaController;
 use App\Http\Controllers\SetorController;
 use App\Http\Controllers\FabricanteController;
 use App\Http\Controllers\ModeloController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas públicas de Autenticação
@@ -20,18 +21,20 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // Rotas de Gestão (Técnicos, Gestores e Administradores)
+    // Rotas de Gestão Operacional (Técnicos, Gestores e Administradores)
     Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
-        
-        // Módulo de Máquinas
-        Route::get('/maquinas', [MaquinaController::class, 'index'])->name('maquinas.index');
-        Route::get('/maquinas/criar', [MaquinaController::class, 'create'])->name('maquinas.create');
-        Route::post('/maquinas', [MaquinaController::class, 'store'])->name('maquinas.store');
+        // Máquinas (Leitura, Cadastro e Operação para chão de fábrica)
+        Route::resource('maquinas', MaquinaController::class);
+    });
 
-        // CRUDs Auxiliares (Setores, Fabricantes, Modelos)
+    // Rotas de Estrutura Fabril e Gestão de Contas (Apenas Gestores e Administradores)
+    Route::middleware(['perfil:Gestor,Administrador'])->group(function () {
         Route::resource('setores', SetorController::class);
         Route::resource('fabricantes', FabricanteController::class);
         Route::resource('modelos', ModeloController::class);
+        
+        // Gestão de Usuários e Técnicos (RF05)
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store']);
     });
 
 });
