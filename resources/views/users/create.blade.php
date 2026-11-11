@@ -5,7 +5,7 @@
     <title>Cadastrar Usuário / Técnico</title>
 </head>
 <body>
-    <h1>Cadastrar Usuário / Técnico</h1>
+    <h1>Cadastrar Usuário</h1>
     <a href="{{ route('users.index') }}">Voltar à Lista</a>
 
     @if ($errors->any())

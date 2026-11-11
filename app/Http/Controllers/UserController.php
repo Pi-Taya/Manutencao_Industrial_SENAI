@@ -12,21 +12,42 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userLogado = Auth::user();
 
         $usersQuery = User::with(['perfil', 'turno', 'setor']);
 
+        // Gestor visualiza apenas Técnicos
         if ($userLogado->perfil->tipo_perfil === 'Gestor') {
             $usersQuery->whereHas('perfil', function ($q) {
                 $q->where('tipo_perfil', 'Técnico');
             });
         }
 
-        $usuarios = $usersQuery->paginate(10);
+        // Filtro de Busca (Nome ou Email)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $usersQuery->where(function ($q) use ($search) {
+                $q->where('nome_usuario', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
 
-        return view('users.index', compact('usuarios'));
+        // Filtro por Perfil (apenas para Admin)
+        if ($request->filled('perfil_id') && $userLogado->perfil->tipo_perfil === 'Administrador') {
+            $usersQuery->where('id_perfil', $request->perfil_id);
+        }
+
+        // Filtro por Especialidade
+        if ($request->filled('especialidade')) {
+            $usersQuery->where('especialidade', $request->especialidade);
+        }
+
+        $usuarios = $usersQuery->paginate(10)->appends($request->all());
+        $perfis = Perfil::all();
+
+        return view('users.index', compact('usuarios', 'perfis'));
     }
 
     public function create()
@@ -158,5 +179,18 @@ class UserController extends Controller
         $usuario->save();
 
         return redirect()->route('users.index')->with('success', 'Usuário/Técnico atualizado com sucesso!');
+    }
+
+    public function show(string $id)
+    {
+        $userLogado = Auth::user();
+        $usuario = User::with(['perfil', 'turno', 'setor'])->findOrFail($id);
+
+        // Se for Gestor, só pode visualizar detalhes de Técnicos
+        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
+            abort(403, 'Ação não autorizada.');
+        }
+
+        return view('users.show', compact('usuario'));
     }
 }

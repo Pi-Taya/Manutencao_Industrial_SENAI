@@ -12,8 +12,38 @@
     @if(session('success'))
         <p style="color: green;">{{ session('success') }}</p>
     @endif
+    @if($errors->any())
+        <p style="color: red;">{{ $errors->first() }}</p>
+    @endif
 
-    <table border="1" cellpadding="8" style="margin-top: 15px; border-collapse: collapse;">
+    <!-- Form de Filtro e Pesquisa -->
+    <form method="GET" action="{{ route('users.index') }}" style="margin-top: 15px; margin-bottom: 15px;">
+        <input type="text" name="search" placeholder="Buscar por nome ou e-mail..." value="{{ request('search') }}">
+        
+        @if(auth()->user()->perfil->tipo_perfil === 'Administrador')
+            <select name="perfil_id">
+                <option value="">Todos os Perfis</option>
+                @foreach($perfis as $p)
+                    <option value="{{ $p->id_perfil }}" {{ request('perfil_id') == $p->id_perfil ? 'selected' : '' }}>
+                        {{ $p->tipo_perfil }}
+                    </option>
+                @endforeach
+            </select>
+        @endif
+
+        <!-- Filtro de Especialidades oficial do Modelo Lógico -->
+        <select name="especialidade">
+            <option value="">Todas Especialidades</option>
+            @foreach(['Geral', 'Mecânica', 'Elétrica', 'Hidráulica'] as $esp)
+                <option value="{{ $esp }}" {{ request('especialidade') == $esp ? 'selected' : '' }}>{{ $esp }}</option>
+            @endforeach
+        </select>
+
+        <button type="submit">Filtrar</button>
+        <a href="{{ route('users.index') }}">Limpar Filtros</a>
+    </form>
+
+    <table border="1" cellpadding="8" style="border-collapse: collapse;">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -37,6 +67,7 @@
                     <td>{{ $u->setor->nome_setor ?? 'N/A' }}</td>
                     <td>{{ $u->status ? 'Ativo' : 'Inativo' }}</td>
                     <td>
+                        <a href="{{ route('users.show', $u->id_usuario) }}">Visualizar</a> | 
                         <a href="{{ route('users.edit', $u->id_usuario) }}">Editar</a>
                     </td>
                 </tr>

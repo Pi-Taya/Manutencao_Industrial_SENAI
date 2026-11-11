@@ -33,8 +33,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('fabricantes', FabricanteController::class);
         Route::resource('modelos', ModeloController::class);
         
-        // Gestão de Usuários e Técnicos (RF05)
-        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        // Gestão de Usuários e Técnicos 
+        Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
     });
 
 });
