@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
             Perfil::firstOrCreate(['tipo_perfil' => $tipoPerfil]);
         }
 
-        // 2. Turnos
-        foreach (['Manhã', 'Tarde', 'Noite', 'Madrugada'] as $nomeTurno) {
+        // 2. Turnos Padronizados (Escala Industrial)
+        foreach (['1º Turno', '2º Turno', '3º Turno', 'Comercial'] as $nomeTurno) {
             Turno::firstOrCreate(['nome_turno' => $nomeTurno]);
         }
 
@@ -44,9 +44,9 @@ class DatabaseSeeder extends Seeder
         }
 
         // 5. Fabricantes
-        $fabRomi = Fabricante::firstOrCreate(['nome_fabricante' => 'Romi']);
+        $fabRomi    = Fabricante::firstOrCreate(['nome_fabricante' => 'Romi']);
         $fabSiemens = Fabricante::firstOrCreate(['nome_fabricante' => 'Siemens']);
-        $fabKuka = Fabricante::firstOrCreate(['nome_fabricante' => 'Kuka']);
+        $fabKuka    = Fabricante::firstOrCreate(['nome_fabricante' => 'Kuka']);
         Fabricante::firstOrCreate(['nome_fabricante' => 'WEG']);
         Fabricante::firstOrCreate(['nome_fabricante' => 'Bosch']);
 
@@ -87,14 +87,14 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 8. Busca de Referências
+        // 8. Busca de Referências (Atualizado para '1º Turno')
         $setorManutencao = Setor::where('nome_setor', 'Manutenção')->firstOrFail();
-        $turno           = Turno::where('nome_turno', 'Manhã')->firstOrFail();
+        $turno           = Turno::where('nome_turno', '1º Turno')->firstOrFail();
         $perfilAdmin     = Perfil::where('tipo_perfil', 'Administrador')->firstOrFail();
         $perfilGestor    = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
         $perfilTecnico   = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
 
-       // 9. Administrador Padrão do Sistema (Único Admin Inicial)
+        // 9. Administrador Padrão do Sistema (Único Admin Inicial)
         User::updateOrCreate(
             ['email' => 'admin@manutencao.test'],
             [

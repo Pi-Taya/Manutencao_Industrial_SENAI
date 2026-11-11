@@ -5,7 +5,7 @@
     <title>Usuários e Técnicos</title>
 </head>
 <body>
-    <h1>Gestão de Usuários e Técnicos</h1>
+    <h1>Gestão de Usuários</h1>
     <a href="{{ route('users.create') }}">+ Cadastrar Novo Usuário</a> | 
     <a href="{{ route('dashboard') }}">Voltar ao Dashboard</a>
 

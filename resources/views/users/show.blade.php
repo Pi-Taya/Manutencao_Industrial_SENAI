@@ -5,7 +5,7 @@
     <title>Detalhes do Usuário</title>
 </head>
 <body>
-    <h1>Detalhes do Usuário / Técnico</h1>
+    <h1>Detalhes do Usuário</h1>
     <a href="{{ route('users.index') }}">Voltar à Lista</a>
 
     <div style="margin-top: 20px; border: 1px solid #ccc; padding: 15px; width: 400px;">

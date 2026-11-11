@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('turnos', function (Blueprint $table) {
             $table->id('id_turno');
-            $table->enum('nome_turno', ['Manhã', 'Tarde', 'Noite', 'Madrugada']);
+            $table->enum('nome_turno', ['1º Turno', '2º Turno', '3º Turno', 'Comercial']);
             $table->timestamps();
         });
     }
