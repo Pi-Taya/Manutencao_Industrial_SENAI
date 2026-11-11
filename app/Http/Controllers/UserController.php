@@ -105,6 +105,7 @@ class UserController extends Controller
         $userLogado = Auth::user();
         $usuario = User::findOrFail($id);
 
+        // Bloqueio de acesso para Gestores alterarem Admins/Gestores
         if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
             abort(403, 'Ação não autorizada.');
         }
@@ -112,7 +113,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'nome_usuario'  => 'required|string|max:100',
             'email'         => 'required|email|max:100|unique:users,email,' . $id . ',id_usuario',
-            'senha'         => 'nullable|string|min:6', // Senha é opcional na edição
+            'senha'         => 'nullable|string|min:6',
             'id_perfil'     => 'required|exists:perfis,id_perfil',
             'id_turno'      => 'required|exists:turnos,id_turno',
             'id_setor'      => 'required|exists:setores,id_setor',
@@ -120,8 +121,25 @@ class UserController extends Controller
             'status'        => 'required|boolean',
         ]);
 
-        $perfilSelecionado = Perfil::findOrFail($request->id_perfil);
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilSelecionado->tipo_perfil !== 'Técnico') {
+        $perfilNovo = Perfil::findOrFail($validated['id_perfil']);
+
+        // TRAVA DE SEGURANÇA: Proteção do último Administrador
+        if ($usuario->perfil->tipo_perfil === 'Administrador') {
+            // Conta quantos administradores ativos existem no sistema
+            $totalAdminsAtivos = User::whereHas('perfil', function ($q) {
+                $q->where('tipo_perfil', 'Administrador');
+            })->where('status', true)->count();
+
+            // Se for o único Administrador ativo e tentar mudar de perfil ou inativar
+            if ($totalAdminsAtivos <= 1 && ($perfilNovo->tipo_perfil !== 'Administrador' || !$validated['status'])) {
+                return back()->withErrors([
+                    'id_perfil' => 'Segurança do Sistema: Não é possível alterar o perfil ou inativar o único Administrador do sistema.'
+                ])->withInput();
+            }
+        }
+
+        // Regra para Gestores
+        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilNovo->tipo_perfil !== 'Técnico') {
             return back()->withErrors(['id_perfil' => 'Gestores só podem atribuir o perfil de Técnico.'])->withInput();
         }
 

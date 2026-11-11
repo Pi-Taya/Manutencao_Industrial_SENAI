@@ -94,7 +94,7 @@ class DatabaseSeeder extends Seeder
         $perfilGestor    = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
         $perfilTecnico   = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
 
-        // 9. Usuários de Teste e Administrador Padrão
+       // 9. Administrador Padrão do Sistema (Único Admin Inicial)
         User::updateOrCreate(
             ['email' => 'admin@manutencao.test'],
             [
@@ -104,32 +104,6 @@ class DatabaseSeeder extends Seeder
                 'nome_usuario'  => 'Administrador do Sistema',
                 'senha'         => Hash::make('password'),
                 'especialidade' => 'Geral',
-                'status'        => true,
-            ]
-        );
-
-        User::updateOrCreate(
-            ['email' => 'gestor@manutencao.test'],
-            [
-                'id_perfil'     => $perfilGestor->id_perfil,
-                'id_turno'      => $turno->id_turno,
-                'id_setor'      => $setorManutencao->id_setor,
-                'nome_usuario'  => 'Gestor de Teste',
-                'senha'         => Hash::make('password'),
-                'especialidade' => 'Geral',
-                'status'        => true,
-            ]
-        );
-
-        User::updateOrCreate(
-            ['email' => 'tecnico@manutencao.test'],
-            [
-                'id_perfil'     => $perfilTecnico->id_perfil,
-                'id_turno'      => $turno->id_turno,
-                'id_setor'      => $setorManutencao->id_setor,
-                'nome_usuario'  => 'Técnico de Teste',
-                'senha'         => Hash::make('password'),
-                'especialidade' => 'Mecânica',
                 'status'        => true,
             ]
         );
