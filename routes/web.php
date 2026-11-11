@@ -6,6 +6,7 @@ use App\Http\Controllers\SetorController;
 use App\Http\Controllers\FabricanteController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrdemServicoController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas públicas de Autenticação
@@ -25,6 +26,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
         // Máquinas (Leitura, Cadastro e Operação para chão de fábrica)
         Route::resource('maquinas', MaquinaController::class);
+
+        // Ordens de Serviço (RF07 / RF08)
+        Route::resource('ordens', OrdemServicoController::class);
     });
 
     // Rotas de Estrutura Fabril e Gestão de Contas (Apenas Gestores e Administradores)

@@ -7,6 +7,7 @@ use App\Models\Modelo;
 use App\Models\Perfil;
 use App\Models\Setor;
 use App\Models\StatusMaquina;
+use App\Models\StatusPrioridade;
 use App\Models\TipoManutencao;
 use App\Models\Turno;
 use App\Models\User;
@@ -43,14 +44,29 @@ class DatabaseSeeder extends Seeder
             TipoManutencao::firstOrCreate(['nome_manutencao' => $nomeManutencao]);
         }
 
-        // 5. Fabricantes
+        // 5. Status de Prioridade (SLAs para Ordens de Serviço)
+        $prioridades = [
+            ['nome_prioridade' => 'Baixa',   'tempo_limite_atendimento' => '48:00:00'],
+            ['nome_prioridade' => 'Média',   'tempo_limite_atendimento' => '24:00:00'],
+            ['nome_prioridade' => 'Alta',    'tempo_limite_atendimento' => '04:00:00'],
+            ['nome_prioridade' => 'Crítica', 'tempo_limite_atendimento' => '01:00:00'],
+        ];
+
+        foreach ($prioridades as $p) {
+            StatusPrioridade::firstOrCreate(
+                ['nome_prioridade' => $p['nome_prioridade']],
+                ['tempo_limite_atendimento' => $p['tempo_limite_atendimento']]
+            );
+        }
+
+        // 6. Fabricantes
         $fabRomi    = Fabricante::firstOrCreate(['nome_fabricante' => 'Romi']);
         $fabSiemens = Fabricante::firstOrCreate(['nome_fabricante' => 'Siemens']);
         $fabKuka    = Fabricante::firstOrCreate(['nome_fabricante' => 'Kuka']);
         Fabricante::firstOrCreate(['nome_fabricante' => 'WEG']);
         Fabricante::firstOrCreate(['nome_fabricante' => 'Bosch']);
 
-        // 6. Modelos (com id_fabricante vinculado)
+        // 7. Modelos (com id_fabricante vinculado)
         $modelos = [
             ['nome_modelo' => 'Torno CNC Galaxy', 'ano_modelo' => 2022, 'id_fabricante' => $fabRomi->id_fabricante],
             ['nome_modelo' => 'Centro de Usinagem Discovery', 'ano_modelo' => 2021, 'id_fabricante' => $fabRomi->id_fabricante],
@@ -68,7 +84,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 7. Setores Industriais Ampliados
+        // 8. Setores Industriais Ampliados
         $setores = [
             ['nome_setor' => 'Manutenção', 'descricao' => 'Setor responsável pela manutenção industrial'],
             ['nome_setor' => 'Usinagem', 'descricao' => 'Usinagem de peças e centros CNC'],
@@ -87,14 +103,12 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 8. Busca de Referências (Atualizado para '1º Turno')
+        // 9. Busca de Referências
         $setorManutencao = Setor::where('nome_setor', 'Manutenção')->firstOrFail();
         $turno           = Turno::where('nome_turno', '1º Turno')->firstOrFail();
         $perfilAdmin     = Perfil::where('tipo_perfil', 'Administrador')->firstOrFail();
-        $perfilGestor    = Perfil::where('tipo_perfil', 'Gestor')->firstOrFail();
-        $perfilTecnico   = Perfil::where('tipo_perfil', 'Técnico')->firstOrFail();
 
-        // 9. Administrador Padrão do Sistema (Único Admin Inicial)
+        // 10. Administrador Padrão do Sistema (Único Admin Inicial)
         User::updateOrCreate(
             ['email' => 'admin@manutencao.test'],
             [
