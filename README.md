@@ -6,7 +6,7 @@ Sistema de manutenção industrial para o projeto final do curso de Desenvolvime
 
   PiTaya - Sistema Inteligente de Manutenção Industrial
   
-## 📌 Escopo do Projeto
+///## 📌 Escopo do Projeto
 
 ### Problema
 
