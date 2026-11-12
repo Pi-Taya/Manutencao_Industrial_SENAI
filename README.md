@@ -4,7 +4,7 @@ Sistema de manutenção industrial para o projeto final do curso de Desenvolvime
 
 # Nome do Projeto
 
-  PiTaya - Sistema Inteligente de Manutenção Industrial
+ dsds PiTaya - Sistema Inteligente de Manutenção Industrial
   
 ## 📌 Escopo do Projeto
 
