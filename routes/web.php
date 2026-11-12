@@ -24,9 +24,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas de Gestão Operacional (Técnicos, Gestores e Administradores)
     Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
-        // Máquinas (Leitura, Cadastro e Operação para chão de fábrica)
-        Route::resource('maquinas', MaquinaController::class);
-
         // Ordens de Serviço 
         Route::resource('ordens', OrdemServicoController::class);
         Route::post('ordens/{id}/alocar-tecnicos', [OrdemServicoController::class, 'alocarTecnicos'])->name('ordens.alocar');
@@ -35,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rotas de Estrutura Fabril e Gestão de Contas (Apenas Gestores e Administradores)
     Route::middleware(['perfil:Gestor,Administrador'])->group(function () {
+        Route::resource('maquinas', MaquinaController::class);
         Route::resource('setores', SetorController::class);
         Route::resource('fabricantes', FabricanteController::class);
         Route::resource('modelos', ModeloController::class);
