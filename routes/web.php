@@ -27,8 +27,10 @@ Route::middleware(['auth'])->group(function () {
         // Máquinas (Leitura, Cadastro e Operação para chão de fábrica)
         Route::resource('maquinas', MaquinaController::class);
 
-        // Ordens de Serviço (RF07 / RF08)
+        // Ordens de Serviço 
         Route::resource('ordens', OrdemServicoController::class);
+        Route::post('ordens/{id}/alocar-tecnicos', [OrdemServicoController::class, 'alocarTecnicos'])->name('ordens.alocar');
+        Route::patch('ordens/{id}/status', [OrdemServicoController::class, 'atualizarStatus'])->name('ordens.status');
     });
 
     // Rotas de Estrutura Fabril e Gestão de Contas (Apenas Gestores e Administradores)

@@ -13,6 +13,7 @@
     <nav>
         <ul>
             <!-- Acesso geral para Técnicos, Gestores e Administradores -->
+            <li><a href="{{ route('ordens.index') }}">Ordens de Serviço</a></li>
             <li><a href="{{ route('maquinas.index') }}">Gerenciar Máquinas</a></li>
             
             <!-- Acesso exclusivo para Gestores e Administradores -->

@@ -1,86 +1,91 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ordem de Serviço #{{ $ordem->id_ordem_servico }}</title>
+</head>
+<body>
+    <h1>Ordem de Serviço #{{ $ordem->id_ordem_servico }}</h1>
+    <p><a href="{{ route('ordens.index') }}">Voltar para a Lista</a> | <a href="{{ route('dashboard') }}">Dashboard</a></p>
 
-@section('content')
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Ordem de Serviço #{{ $ordem->id_ordem_servico }}</h5>
-                    <div>
-                        <span class="badge bg-primary fs-6">{{ $ordem->status }}</span>
-                        @if($ordem->parou_producao)
-                            <span class="badge bg-danger fs-6 ms-1">PARADA DE PRODUÇÃO</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6 class="text-muted fw-bold">Informações do Equipamento</h6>
-                            <p class="mb-1"><strong>Máquina:</strong> {{ $ordem->maquina->nome_maquina ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Código:</strong> {{ $ordem->maquina->codigo_maquina ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Localização:</strong> {{ $ordem->maquina->setor->nome_setor ?? 'N/A' }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted fw-bold">Informações da Solicitação</h6>
-                            <p class="mb-1"><strong>Solicitante:</strong> {{ $ordem->solicitante->nome_usuario ?? 'N/A' }}</p>
-                            <p class="mb-1"><strong>Tipo de Manutenção:</strong> {{ $ordem->tipoManutencao->nome_manutencao ?? 'N/A' }}</p>
-                            <p class="mb-1">
-                                <strong>Prioridade / SLA:</strong> 
-                                <span class="badge 
-                                    @if($ordem->prioridade->nome_prioridade == 'Crítica') bg-danger 
-                                    @elseif($ordem->prioridade->nome_prioridade == 'Alta') bg-warning text-dark 
-                                    @elseif($ordem->prioridade->nome_prioridade == 'Média') bg-info text-dark 
-                                    @else bg-secondary @endif">
-                                    {{ $ordem->prioridade->nome_prioridade ?? 'N/A' }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
+    @if(session('success'))
+        <p><strong>[Sucesso]: {{ session('success') }}</strong></p>
+    @endif
 
-                    <hr>
+    <hr>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Data / Hora Abertura:</strong> {{ $ordem->data_abertura->format('d/m/Y H:i') }}</p>
-                            <p class="mb-1"><strong>Previsão de Término (SLA):</strong> {{ $ordem->data_previsao->format('d/m/Y H:i') }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-1"><strong>Início do Atendimento:</strong> {{ $ordem->data_inicio_atendimento ? $ordem->data_inicio_atendimento->format('d/m/Y H:i') : 'Não iniciado' }}</p>
-                            <p class="mb-1"><strong>Data Fechamento:</strong> {{ $ordem->data_fechamento ? $ordem->data_fechamento->format('d/m/Y H:i') : 'Em aberto' }}</p>
-                        </div>
-                    </div>
+    <h2>Status e Situação</h2>
+    <ul>
+        <li><strong>Status Atual:</strong> {{ $ordem->status }}</li>
+        <li><strong>Parou Produção:</strong> {{ $ordem->parou_producao ? 'SIM (Máquina Parada)' : 'NÃO' }}</li>
+        <li><strong>Prioridade:</strong> {{ $ordem->prioridade->nome_prioridade ?? 'N/A' }}</li>
+        <li><strong>Tipo de Manutenção:</strong> {{ $ordem->tipoManutencao->nome_manutencao ?? 'N/A' }}</li>
+    </ul>
 
-                    <div class="mb-4">
-                        <h6 class="text-muted fw-bold">Descrição da Falha / Relato Inicial</h6>
-                        <div class="p-3 bg-light rounded border">
-                            {{ $ordem->descricao_falha }}
-                        </div>
-                    </div>
+    <!-- Formulário de Alteração de Status (RF09) -->
+    <form action="{{ route('ordens.status', $ordem->id_ordem_servico) }}" method="POST">
+        @csrf
+        @method('PATCH')
+        <label for="status"><strong>Alterar Status da OS:</strong></label>
+        <select name="status" id="status">
+            @foreach(['Aberta', 'Aguardando Aprovação', 'Em Andamento', 'Aguardando Peça', 'Aguardando Validação', 'Concluída', 'Cancelada'] as $st)
+                <option value="{{ $st }}" {{ $ordem->status == $st ? 'selected' : '' }}>{{ $st }}</option>
+            @endforeach
+        </select>
+        <button type="submit">Atualizar Status</button>
+    </form>
 
-                    <div class="mb-4">
-                        <h6 class="text-muted fw-bold">Técnicos Alocados (RF08)</h6>
-                        @if($ordem->tecnicos->count() > 0)
-                            <ul class="list-group">
-                                @foreach($ordem->tecnicos as $tecnico)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ $tecnico->nome_usuario }} ({{ $tecnico->especialidade }})
-                                        <span class="badge bg-secondary">{{ $tecnico->turno->nome_turno ?? '' }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <div class="alert alert-warning mb-0">Nenhum técnico associado a esta Ordem de Serviço até o momento.</div>
-                        @endif
-                    </div>
+    <hr>
 
-                    <div class="d-flex justify-content-between">
-                        <a href="{{ route('ordens.index') }}" class="btn btn-secondary">Voltar para a Lista</a>
-                    </div>
-                </div>
+    <h2>Dados do Equipamento e Tempos</h2>
+    <ul>
+        <li><strong>Máquina:</strong> {{ $ordem->maquina->nome_maquina ?? 'N/A' }} (Cód: {{ $ordem->maquina->codigo_maquina ?? 'N/A' }})</li>
+        <li><strong>Setor:</strong> {{ $ordem->maquina->setor->nome_setor ?? 'N/A' }}</li>
+        <li><strong>Solicitante:</strong> {{ $ordem->solicitante->nome_usuario ?? 'N/A' }}</li>
+        <li><strong>Data/Hora Abertura:</strong> {{ $ordem->data_abertura->format('d/m/Y H:i') }}</li>
+        <li><strong>Previsão Limite (SLA):</strong> {{ $ordem->data_previsao->format('d/m/Y H:i') }}</li>
+        <li><strong>Início Atendimento:</strong> {{ $ordem->data_inicio_atendimento ? $ordem->data_inicio_atendimento->format('d/m/Y H:i') : 'Não iniciado' }}</li>
+        <li><strong>Data Fechamento:</strong> {{ $ordem->data_fechamento ? $ordem->data_fechamento->format('d/m/Y H:i') : 'Em aberto' }}</li>
+        @if(!is_null($ordem->tempo_parada_minutos))
+            <li><strong>Tempo Total de Atendimento/Parada:</strong> {{ $ordem->tempo_parada_minutos }} minutos</li>
+        @endif
+    </ul>
+
+    <h3>Descrição da Falha</h3>
+    <p>{{ $ordem->descricao_falha }}</p>
+
+    <hr>
+
+    <h2>Técnicos Alocados (RF08)</h2>
+    @if($ordem->tecnicos->count() > 0)
+        <ul>
+            @foreach($ordem->tecnicos as $tecnico)
+                <li>{{ $tecnico->nome_usuario }} - Especialidade: {{ $tecnico->especialidade ?? 'Geral' }} ({{ $tecnico->turno->nome_turno ?? 'Sem turno' }})</li>
+            @endforeach
+        </ul>
+    @else
+        <p>Nenhum técnico alocado nesta OS.</p>
+    @endif
+
+    <!-- Formulário para alocar técnicos (Gestores/Administradores ou Técnicos) -->
+    <form action="{{ route('ordens.alocar', $ordem->id_ordem_servico) }}" method="POST">
+        @csrf
+        <p><strong>Selecionar Técnicos Responsáveis:</strong></p>
+        @forelse($tecnicosDisponiveis as $tec)
+            <div>
+                <label>
+                    <input type="checkbox" name="tecnicos[]" value="{{ $tec->id_usuario }}" 
+                        {{ $ordem->tecnicos->contains('id_usuario', $tec->id_usuario) ? 'checked' : '' }}>
+                    {{ $tec->nome_usuario }} ({{ $tec->especialidade ?? 'Geral' }})
+                </label>
             </div>
-        </div>
-    </div>
-</div>
-@endsection
+        @empty
+            <p>Nenhum usuário com perfil "Técnico" ativo cadastrado.</p>
+        @endforelse
+        <br>
+        <button type="submit">Salvar Alocação de Técnicos</button>
+    </form>
+
+    <hr>
+</body>
+</html>
