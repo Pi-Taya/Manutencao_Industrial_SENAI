@@ -12,7 +12,7 @@
     
     <nav>
         <ul>
-            <<nav>
+            <nav>
         <ul>
             <!-- Acesso geral para Técnicos, Gestores e Administradores -->
             <li><a href="{{ route('ordens.index') }}">Ordens de Serviço</a></li>
