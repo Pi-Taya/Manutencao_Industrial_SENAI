@@ -74,11 +74,11 @@
         </div>
         <br>
 
-        <!-- Parou Produção (Gatilho da RN04) -->
+        <!-- Parou Produção -->
         <div>
             <label for="parou_producao">
                 <input type="checkbox" name="parou_producao" id="parou_producao" value="1" {{ old('parou_producao') ? 'checked' : '' }}>
-                <strong>A falha provocou a parada total da produção nesta máquina? (RN04)</strong>
+                <strong>A falha provocou a parada total da produção nesta máquina?</strong>
             </label><br>
             <small>Se marcado, o status da máquina será alterado automaticamente para "Em Manutenção".</small>
         </div>
