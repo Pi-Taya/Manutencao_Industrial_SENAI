@@ -7,7 +7,7 @@ Sistema de manutenção industrial para o projeto final do curso de Desenvolvime
   PiTaya - Sistema Inteligente de Manutenção Industrial
   
 ## 📌 Escopo do Projeto
-
+;;;;;;
 ### Problema
 
 Linhas de produção industriais sofrem com paradas não planejadas, falta de rastreabilidade na execução de ordens de serviço, falhas na gestão de estoque de peças de reposição e ausência de histórico estruturado sobre falhas de maquinários, gerando prejuízos financeiros e atrasos operacionais.
