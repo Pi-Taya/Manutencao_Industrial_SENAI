@@ -12,6 +12,18 @@
         <p><strong>[Sucesso]: {{ session('success') }}</strong></p>
     @endif
 
+    @if(session('error'))
+        <p><strong>[Atenção]: {{ session('error') }}</strong></p>
+    @endif
+
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $erro)
+                <li><strong>[Erro]:</strong> {{ $erro }}</li>
+            @endforeach
+        </ul>
+    @endif
+
     <hr>
 
     <h2>Status e Situação</h2>
@@ -22,7 +34,7 @@
         <li><strong>Tipo de Manutenção:</strong> {{ $ordem->tipoManutencao->nome_manutencao ?? 'N/A' }}</li>
     </ul>
 
-    <!-- Formulário de Alteração de Status (RF09) -->
+    <!-- Formulário de Alteração de Status -->
     <form action="{{ route('ordens.status', $ordem->id_ordem_servico) }}" method="POST">
         @csrf
         @method('PATCH')
@@ -56,7 +68,7 @@
 
     <hr>
 
-    <h2>Técnicos Alocados (RF08)</h2>
+    <h2>Técnicos Alocados</h2>
     @if($ordem->tecnicos->count() > 0)
         <ul>
             @foreach($ordem->tecnicos as $tecnico)
@@ -67,7 +79,7 @@
         <p>Nenhum técnico alocado nesta OS.</p>
     @endif
 
-    <!-- Formulário para alocar técnicos (Gestores/Administradores ou Técnicos) -->
+    <!-- Formulário para alocar técnicos -->
     <form action="{{ route('ordens.alocar', $ordem->id_ordem_servico) }}" method="POST">
         @csrf
         <p><strong>Selecionar Técnicos Responsáveis:</strong></p>
@@ -84,6 +96,48 @@
         @endforelse
         <br>
         <button type="submit">Salvar Alocação de Técnicos</button>
+    </form>
+
+    <hr>
+
+    <h2>Parecer Técnico (Laudo)</h2>
+
+    @if($ordem->parecer)
+        <ul>
+            <li><strong>Registrado em:</strong> {{ $ordem->parecer->data_registro->format('d/m/Y H:i') }}</li>
+            <li><strong>Perfil Responsável:</strong> {{ $ordem->parecer->perfil->tipo_perfil ?? 'N/A' }}</li>
+            <li><strong>Condição Pós-Reparo:</strong> <strong>{{ $ordem->parecer->condicao_pos_reparo }}</strong></li>
+            <li><strong>Laudo Técnico:</strong> {{ $ordem->parecer->descricao_laudo }}</li>
+        </ul>
+    @else
+        <p>Nenhum parecer técnico registrado para esta Ordem de Serviço.</p>
+    @endif
+
+    <form action="{{ route('ordens.parecer', $ordem->id_ordem_servico) }}" method="POST">
+        @csrf
+        <div>
+            <label for="condicao_pos_reparo"><strong>Condição Pós-Reparo *:</strong></label><br>
+            <select name="condicao_pos_reparo" id="condicao_pos_reparo" required>
+                <option value="">Selecione a condição...</option>
+                @foreach([
+                    'Operacional / Aprovado',
+                    'Operacional com Restrições / Parcial',
+                    'Aguardando Peça',
+                    'Condenado / Inoperante'
+                ] as $condicao)
+                    <option value="{{ $condicao }}" {{ old('condicao_pos_reparo', $ordem->parecer->condicao_pos_reparo ?? '') == $condicao ? 'selected' : '' }}>
+                        {{ $condicao }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="descricao_laudo"><strong>Descrição do Laudo / Serviço Executado *:</strong></label><br>
+            <textarea name="descricao_laudo" id="descricao_laudo" rows="4" cols="60" required placeholder="Descreva a causa raiz encontrada, o serviço realizado e observações técnicas...">{{ old('descricao_laudo', $ordem->parecer->descricao_laudo ?? '') }}</textarea>
+        </div>
+        <br>
+        <button type="submit">{{ $ordem->parecer ? 'Atualizar Parecer Técnico' : 'Salvar Parecer Técnico' }}</button>
     </form>
 
     <hr>

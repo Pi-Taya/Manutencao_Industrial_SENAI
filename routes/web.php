@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('ordens', OrdemServicoController::class);
         Route::post('ordens/{id}/alocar-tecnicos', [OrdemServicoController::class, 'alocarTecnicos'])->name('ordens.alocar');
         Route::patch('ordens/{id}/status', [OrdemServicoController::class, 'atualizarStatus'])->name('ordens.status');
+        Route::post('ordens/{id}/parecer', [OrdemServicoController::class, 'registrarParecer'])->name('ordens.parecer');
     });
 
     // Rotas de Estrutura Fabril e Gestão de Contas (Apenas Gestores e Administradores)

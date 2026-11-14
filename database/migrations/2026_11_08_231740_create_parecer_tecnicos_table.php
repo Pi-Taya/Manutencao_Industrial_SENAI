@@ -11,14 +11,18 @@ return new class extends Migration
         Schema::create('parecer_tecnicos', function (Blueprint $table) {
             $table->id('id_parecer');
             
-            // Chaves Estrangeiras
             $table->unsignedBigInteger('id_perfil');
-            // adicione outras FKs da tabela aqui se houver (ex: id_maquina, id_os, etc)
+            $table->dateTime('data_registro')->useCurrent();
+            $table->text('descricao_laudo');
+            $table->enum('condicao_pos_reparo', [
+                'Operacional / Aprovado',
+                'Operacional com Restrições / Parcial',
+                'Aguardando Peça',
+                'Condenado / Inoperante'
+            ]);
 
-            $table->text('descricao_parecer');
             $table->timestamps();
 
-            // Constraint apontando para a tabela 'perfis'
             $table->foreign('id_perfil')->references('id_perfil')->on('perfis')->onDelete('cascade');
         });
     }

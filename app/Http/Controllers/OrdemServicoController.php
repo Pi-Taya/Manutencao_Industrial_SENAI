@@ -7,6 +7,7 @@ use App\Models\Maquina;
 use App\Models\TipoManutencao;
 use App\Models\StatusPrioridade;
 use App\Models\StatusMaquina;
+use App\Models\ParecerTecnico;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,15 +24,16 @@ class OrdemServicoController extends Controller
 
         // Filtro por status da OS
         if ($request->filled('status')) {
-            $query->where('status',$request->status);
+            $query->where('status', $request->status);
         }
 
         // Filtro por prioridade
         if ($request->filled('id_status_prioridade')) {
-            $query->where('id_status_prioridade',$request->id_status_prioridade);
+            $query->where('id_status_prioridade', $request->id_status_prioridade);
         }
 
-        $ordens = $query->orderBy('created_at', 'desc')->paginate(10);$prioridades = StatusPrioridade::all();
+        $ordens = $query->orderBy('created_at', 'desc')->paginate(10);
+        $prioridades = StatusPrioridade::all();
 
         return view('ordens.index', compact('ordens', 'prioridades'));
     }
@@ -42,7 +44,8 @@ class OrdemServicoController extends Controller
     public function create()
     {
         $maquinas = Maquina::where('status', true)->get();
-        $tiposManutencao = TipoManutencao::all();$prioridades = StatusPrioridade::all();
+        $tiposManutencao = TipoManutencao::all();
+        $prioridades = StatusPrioridade::all();
 
         return view('ordens.create', compact('maquinas', 'tiposManutencao', 'prioridades'));
     }
@@ -63,10 +66,10 @@ class OrdemServicoController extends Controller
         $prioridade = StatusPrioridade::findOrFail($request->id_status_prioridade);
 
         // Cálculo da previsão limite de atendimento (SLA)
-        $horasSla = explode(':',$prioridade->tempo_limite_atendimento)[0] ?? 24;
+        $horasSla = explode(':', $prioridade->tempo_limite_atendimento)[0] ?? 24;
         $dataPrevisao = Carbon::now()->addHours((int)$horasSla);
 
-        $parouProducao =$request->has('parou_producao');
+        $parouProducao = $request->has('parou_producao');
 
         // 1. Criar a Ordem de Serviço
         $os = OrdemServico::create([
@@ -82,10 +85,11 @@ class OrdemServicoController extends Controller
         ]);
 
         // 2. Regra de Negócio RN04: Atualiza a máquina para "Em Manutenção" se parou a produção
-        if ($parouProducao) {$statusEmManutencao = StatusMaquina::where('estado_da_maquina', 'Em Manutenção')->first();
+        if ($parouProducao) {
+            $statusEmManutencao = StatusMaquina::where('estado_da_maquina', 'Em Manutenção')->first();
             if ($statusEmManutencao) {
                 $maquina = Maquina::findOrFail($request->id_maquina);
-                $maquina->update(['id_status_maquina' =>$statusEmManutencao->id_status_maquina]);
+                $maquina->update(['id_status_maquina' => $statusEmManutencao->id_status_maquina]);
             }
         }
 
@@ -98,10 +102,18 @@ class OrdemServicoController extends Controller
      */
     public function show($id)
     {
-        $ordem = OrdemServico::with([ 'maquina.setor', 'solicitante', 'tipoManutencao', 'prioridade', 'tecnicos.turno' ])->findOrFail($id);
+        $ordem = OrdemServico::with([
+            'maquina.setor',
+            'solicitante',
+            'tipoManutencao',
+            'prioridade',
+            'tecnicos.turno',
+            'parecer.perfil'
+        ])->findOrFail($id);
 
         // Lista apenas usuários ativos com perfil Técnico para seleção na OS
-        $tecnicosDisponiveis = User::whereHas('perfil', function ($q) {$q->where('tipo_perfil', 'Técnico');
+        $tecnicosDisponiveis = User::whereHas('perfil', function ($q) {
+            $q->where('tipo_perfil', 'Técnico');
         })->where('status', true)->get();
 
         return view('ordens.show', compact('ordem', 'tecnicosDisponiveis'));
@@ -110,7 +122,7 @@ class OrdemServicoController extends Controller
     /**
      * Alocar ou atualizar técnicos na OS (RF08)
      */
-    public function alocarTecnicos(Request $request,$id)
+    public function alocarTecnicos(Request $request, $id)
     {
         $request->validate([
             'tecnicos'   => 'nullable|array',
@@ -129,31 +141,36 @@ class OrdemServicoController extends Controller
     /**
      * Atualizar o status do atendimento e encerrar a OS (RF09)
      */
-    public function atualizarStatus(Request $request,$id)
+    public function atualizarStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:Aberta,Aguardando Aprovação,Em Andamento,Aguardando Peça,Aguardando Validação,Concluída,Cancelada',
         ]);
 
         $ordem = OrdemServico::findOrFail($id);
-        $novoStatus =$request->status;
-        $agora = Carbon::now();
+        $novoStatus = $request->status;
 
-        $dadosAtualizacao = ['status' =>$novoStatus];
-
-        // Se iniciou o atendimento agora, grava o timestamp de início
-        if ($novoStatus === 'Em Andamento' && is_null($ordem->data_inicio_atendimento)) {
-            $dadosAtualizacao['data_inicio_atendimento'] =$agora;
+        // Trava de regra de negócio: exige parecer técnico cadastrado para concluir a OS
+        if ($novoStatus === 'Concluída' && is_null($ordem->id_parecer)) {
+            return redirect()->route('ordens.show', $ordem->id_ordem_servico)
+                ->with('error', 'Não é possível concluir a OS sem antes registrar o Parecer Técnico.');
         }
 
-        // Se concluiu a OS, calcula o tempo total de parada e libera a máquina (RN04 reversa)
+        $agora = Carbon::now();
+        $dadosAtualizacao = ['status' => $novoStatus];
+
+        if ($novoStatus === 'Em Andamento' && is_null($ordem->data_inicio_atendimento)) {
+            $dadosAtualizacao['data_inicio_atendimento'] = $agora;
+        }
+
         if ($novoStatus === 'Concluída' && is_null($ordem->data_fechamento)) {
-            $dadosAtualizacao['data_fechamento'] =$agora;
+            $dadosAtualizacao['data_fechamento'] = $agora;
             $dadosAtualizacao['tempo_parada_minutos'] = $ordem->data_abertura->diffInMinutes($agora);
 
-            if ($ordem->parou_producao) {$statusAtiva = StatusMaquina::where('estado_da_maquina', 'Ativa')->first();
-                if ($statusAtiva &&$ordem->maquina) {
-                    $ordem->maquina->update(['id_status_maquina' =>$statusAtiva->id_status_maquina]);
+            if ($ordem->parou_producao) {
+                $statusAtiva = StatusMaquina::where('estado_da_maquina', 'Ativa')->first();
+                if ($statusAtiva && $ordem->maquina) {
+                    $ordem->maquina->update(['id_status_maquina' => $statusAtiva->id_status_maquina]);
                 }
             }
         }
@@ -162,5 +179,40 @@ class OrdemServicoController extends Controller
 
         return redirect()->route('ordens.show', $ordem->id_ordem_servico)
             ->with('success', "Status da OS alterado para: {$novoStatus}");
+    }
+
+    /**
+     * Registrar ou atualizar o Parecer Técnico vinculado à OS
+     */
+    public function registrarParecer(Request $request, $id)
+    {
+        $request->validate([
+            'descricao_laudo'     => 'required|string',
+            'condicao_pos_reparo' => 'required|in:Operacional / Aprovado,Operacional com Restrições / Parcial,Aguardando Peça,Condenado / Inoperante',
+        ]);
+
+        $ordem = OrdemServico::findOrFail($id);
+        $usuario = Auth::user();
+
+        if ($ordem->id_parecer) {
+            $ordem->parecer->update([
+                'id_perfil'           => $usuario->id_perfil,
+                'data_registro'       => Carbon::now(),
+                'descricao_laudo'     => $request->descricao_laudo,
+                'condicao_pos_reparo' => $request->condicao_pos_reparo,
+            ]);
+        } else {
+            $parecer = ParecerTecnico::create([
+                'id_perfil'           => $usuario->id_perfil,
+                'data_registro'       => Carbon::now(),
+                'descricao_laudo'     => $request->descricao_laudo,
+                'condicao_pos_reparo' => $request->condicao_pos_reparo,
+            ]);
+
+            $ordem->update(['id_parecer' => $parecer->id_parecer]);
+        }
+
+        return redirect()->route('ordens.show', $ordem->id_ordem_servico)
+            ->with('success', 'Parecer técnico registrado com sucesso!');
     }
 }
