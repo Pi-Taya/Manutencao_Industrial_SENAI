@@ -7,8 +7,12 @@
 <body>
     <h1>Máquinas Cadastradas</h1>
 
-    <a href="{{ route('maquinas.create') }}">+ Cadastrar Nova Máquina</a> | 
-    <a href="{{ route('dashboard') }}">Voltar ao Dashboard</a>
+    <p>
+        @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'Administrador']))
+            <a href="{{ route('maquinas.create') }}">+ Cadastrar Nova Máquina</a> | 
+        @endif
+        <a href="{{ route('dashboard') }}">Voltar ao Dashboard</a>
+    </p>
 
     @if(session('success'))
         <p style="color: green;">{{ session('success') }}</p>
@@ -41,13 +45,16 @@
                     <td>{{ \Carbon\Carbon::parse($maquina->data_aquisicao)->format('d/m/Y') }}</td>
                     <td>{{ $maquina->statusMaquina->estado_da_maquina ?? 'N/A' }}</td>
                     <td>
-                        <a href="{{ route('maquinas.show', $maquina->id_maquina) }}">Visualizar</a> | 
-                        <a href="{{ route('maquinas.edit', $maquina->id_maquina) }}">Editar</a> | 
-                        <form action="{{ route('maquinas.destroy', $maquina->id_maquina) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta máquina?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="color: red; background: none; border: none; cursor: pointer; text-decoration: underline;">Excluir</button>
-                        </form>
+                        <a href="{{ route('maquinas.show', $maquina->id_maquina) }}">Visualizar</a>
+
+                        @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'Administrador']))
+                            | <a href="{{ route('maquinas.edit', $maquina->id_maquina) }}">Editar</a> | 
+                            <form action="{{ route('maquinas.destroy', $maquina->id_maquina) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta máquina?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" style="color: red; background: none; border: none; cursor: pointer; text-decoration: underline;">Excluir</button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @empty
