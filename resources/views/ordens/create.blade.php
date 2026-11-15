@@ -32,7 +32,7 @@
                 <option value="">Selecione a máquina...</option>
                 @foreach($maquinas as $maquina)
                     <option value="{{ $maquina->id_maquina }}" {{ old('id_maquina') == $maquina->id_maquina ? 'selected' : '' }}>
-                        {{ $maquina->nome_maquina }} (Código: {{ $maquina->codigo_maquina }})
+                        {{ $maquina->nome_maquina }} (Código: {{ $maquina->codigo_tag }})
                     </option>
                 @endforeach
             </select>

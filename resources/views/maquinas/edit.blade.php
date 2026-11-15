@@ -62,7 +62,7 @@
 
         <div>
             <label for="data_aquisicao">Data de Aquisição *:</label><br>
-            <input type="date" id="data_aquisicao" name="data_aquisicao" value="{{ old('data_aquisicao', $maquina->data_aquisicao) }}" required>
+            <input type="date" id="data_aquisicao" name="data_aquisicao" value="{{ old('data_aquisicao', $maquina->data_aquisicao ? $maquina->data_aquisicao->format('Y-m-d') : '') }}" required>
         </div>
         <br>
 
@@ -80,7 +80,7 @@
         <br>
 
         <div>
-            <label for="id_status_maquina">Status *:</label><br>
+            <label for="id_status_maquina">Status Operacional *:</label><br>
             <select id="id_status_maquina" name="id_status_maquina" required>
                 <option value="">Selecione o Status</option>
                 @foreach($statuses as $status)
@@ -88,6 +88,15 @@
                         {{ $status->estado_da_maquina }}
                     </option>
                 @endforeach
+            </select>
+        </div>
+        <br>
+
+        <div>
+            <label for="status">Situação no Cadastro *:</label><br>
+            <select id="status" name="status" required>
+                <option value="1" {{ old('status', $maquina->status ? '1' : '0') == '1' ? 'selected' : '' }}>Ativa (Disponível para OS)</option>
+                <option value="0" {{ old('status', $maquina->status ? '1' : '0') == '0' ? 'selected' : '' }}>Inativa (Desativada no Sistema)</option>
             </select>
         </div>
         <br>

@@ -16,7 +16,7 @@ use Carbon\Carbon;
 class OrdemServicoController extends Controller
 {
     /**
-     * Listagem de Ordens de Serviço 
+     * Listagem de Ordens de Serviço
      */
     public function index(Request $request)
     {
@@ -32,7 +32,7 @@ class OrdemServicoController extends Controller
             $query->where('id_status_prioridade', $request->id_status_prioridade);
         }
 
-        // OS abertas/pendentes com prioridade Crítica entram no topo da listagem
+        // OS abertas/pendentes com prioridade Crítica entram no topo da listagem (RN02)
         $ordens = $query
             ->orderByRaw("CASE WHEN status NOT IN ('Concluída', 'Cancelada') AND id_status_prioridade = (SELECT id_status_prioridade FROM status_prioridades WHERE nome_prioridade = 'Crítica' LIMIT 1) THEN 0 ELSE 1 END")
             ->orderBy('created_at', 'desc')
@@ -44,7 +44,7 @@ class OrdemServicoController extends Controller
     }
 
     /**
-     * Formulário de Abertura de OS 
+     * Formulário de Abertura de OS
      */
     public function create()
     {
@@ -125,7 +125,7 @@ class OrdemServicoController extends Controller
     }
 
     /**
-     * Alocar ou atualizar técnicos na OS 
+     * Alocar ou atualizar técnicos na OS (RF08, RN03 e RN10)
      */
     public function alocarTecnicos(Request $request, $id)
     {
@@ -134,23 +134,49 @@ class OrdemServicoController extends Controller
             'tecnicos.*' => 'exists:users,id_usuario',
         ]);
 
-        $ordem = OrdemServico::findOrFail($id);
+        $ordem = OrdemServico::with('prioridade')->findOrFail($id);
 
-        // Histórico Imutável - OS concluída não permite alterar equipe técnica
+        // RN03: Histórico Imutável - OS concluída não permite alterar equipe técnica
         if ($ordem->status === 'Concluída') {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Não é possível alterar técnicos de uma OS já concluída.');
         }
-        
+
+        $tecnicosSelecionados = $request->tecnicos ?? [];
+        $prioridadeAtual = $ordem->prioridade->nome_prioridade ?? '';
+
+        // RN10: Impede alocar técnico simultaneamente em duas OS abertas de prioridade Alta ou Crítica
+        if (in_array($prioridadeAtual, ['Alta', 'Crítica']) && !empty($tecnicosSelecionados)) {
+            $conflito = OrdemServico::where('id_ordem_servico', '!=', $ordem->id_ordem_servico)
+                ->whereNotIn('status', ['Concluída', 'Cancelada'])
+                ->whereHas('prioridade', function ($q) {
+                    $q->whereIn('nome_prioridade', ['Alta', 'Crítica']);
+                })
+                ->whereHas('tecnicos', function ($q) use ($tecnicosSelecionados) {
+                    $q->whereIn('users.id_usuario', $tecnicosSelecionados);
+                })
+                ->with(['tecnicos', 'prioridade'])
+                ->first();
+
+            if ($conflito) {
+                $tecnicoConflitante = $conflito->tecnicos
+                    ->whereIn('id_usuario', $tecnicosSelecionados)
+                    ->first();
+
+                return redirect()->route('ordens.show', $ordem->id_ordem_servico)
+                    ->with('error', "Conflito de agenda (RN10): O técnico {$tecnicoConflitante->nome_usuario} já está alocado na OS #{$conflito->id_ordem_servico} (Prioridade {$conflito->prioridade->nome_prioridade}).");
+            }
+        }
+
         // Sincroniza a tabela pivô ordem_servico_tecnico
-        $ordem->tecnicos()->sync($request->tecnicos ?? []);
+        $ordem->tecnicos()->sync($tecnicosSelecionados);
 
         return redirect()->route('ordens.show', $ordem->id_ordem_servico)
             ->with('success', 'Equipe técnica atualizada com sucesso!');
     }
 
     /**
-     * Atualizar o status do atendimento e encerrar a OS 
+     * Atualizar o status do atendimento e encerrar a OS (RF10, RN01, RN03, RN05, RN07)
      */
     public function atualizarStatus(Request $request, $id)
     {
@@ -161,13 +187,13 @@ class OrdemServicoController extends Controller
         $ordem = OrdemServico::with('tecnicos')->findOrFail($id);
         $usuario = Auth::user();
 
-        // Histórico Imutável - OS já concluída não pode ter o status alterado
+        // RN03: Histórico Imutável - OS já concluída não pode ter o status alterado
         if ($ordem->status === 'Concluída') {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Esta OS já foi concluída e não pode mais ser alterada (Histórico Imutável).');
         }
 
-        // Técnico só altera status de OS na qual esteja alocado
+        // RN05: Técnico só altera status de OS na qual esteja alocado
         if (($usuario->perfil->tipo_perfil ?? '') === 'Técnico' && !$ordem->tecnicos->contains('id_usuario', $usuario->id_usuario)) {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Acesso negado: você só pode atualizar o status de Ordens de Serviço em que está alocado.');
@@ -175,7 +201,7 @@ class OrdemServicoController extends Controller
 
         $novoStatus = $request->status;
 
-        // Trava de regra de negócio - exige parecer técnico cadastrado para concluir a OS
+        // RN01: Exige parecer técnico cadastrado para concluir a OS
         if ($novoStatus === 'Concluída' && is_null($ordem->id_parecer)) {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Não é possível concluir a OS sem antes registrar o Parecer Técnico.');
@@ -192,7 +218,7 @@ class OrdemServicoController extends Controller
             $dadosAtualizacao['data_fechamento'] = $agora;
             $dadosAtualizacao['tempo_parada_minutos'] = $ordem->data_abertura->diffInMinutes($agora);
 
-            // Atualiza status da máquina para Ativa após conclusão
+            // RN07: Atualiza status da máquina para Ativa após conclusão
             if ($ordem->parou_producao) {
                 $statusAtiva = StatusMaquina::where('estado_da_maquina', 'Ativa')->first();
                 if ($statusAtiva && $ordem->maquina) {
@@ -208,7 +234,7 @@ class OrdemServicoController extends Controller
     }
 
     /**
-     * Registrar ou atualizar o Parecer Técnico vinculado à OS 
+     * Registrar ou atualizar o Parecer Técnico vinculado à OS (RF10, RN03, RN05)
      */
     public function registrarParecer(Request $request, $id)
     {
@@ -220,13 +246,13 @@ class OrdemServicoController extends Controller
         $ordem = OrdemServico::with('tecnicos')->findOrFail($id);
         $usuario = Auth::user();
 
-        // Histórico Imutável - OS concluída não permite editar parecer
+        // RN03: Histórico Imutável - OS concluída não permite editar parecer
         if ($ordem->status === 'Concluída') {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Não é possível alterar o parecer técnico de uma OS já concluída.');
         }
 
-        // Técnico só registra parecer em OS na qual esteja alocado
+        // RN05: Técnico só registra parecer em OS na qual esteja alocado
         if (($usuario->perfil->tipo_perfil ?? '') === 'Técnico' && !$ordem->tecnicos->contains('id_usuario', $usuario->id_usuario)) {
             return redirect()->route('ordens.show', $ordem->id_ordem_servico)
                 ->with('error', 'Acesso negado: você só pode registrar parecer técnico em Ordens de Serviço em que está alocado.');
@@ -255,7 +281,7 @@ class OrdemServicoController extends Controller
     }
 
     /**
-     * Bloqueio de exclusão para histórico imutável 
+     * Bloqueio de exclusão para histórico imutável (RN03)
      */
     public function destroy($id)
     {

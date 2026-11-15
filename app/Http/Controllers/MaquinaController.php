@@ -20,10 +20,10 @@ class MaquinaController extends Controller
 
     public function create()
     {
-        $modelos    = Modelo::all();
+        $modelos     = Modelo::all();
         $fabricantes = Fabricante::all();
-        $setores    = Setor::all();
-        $statuses   = StatusMaquina::all();
+        $setores     = Setor::all();
+        $statuses    = StatusMaquina::all();
 
         return view('maquinas.create', compact('modelos', 'fabricantes', 'setores', 'statuses'));
     }
@@ -40,6 +40,9 @@ class MaquinaController extends Controller
             'id_status_maquina' => 'required|exists:status_maquinas,id_status_maquina',
         ]);
 
+        
+        $validated['status'] = true;
+
         Maquina::create($validated);
 
         return redirect()->route('maquinas.index')->with('success', 'Máquina cadastrada com sucesso!');
@@ -53,11 +56,11 @@ class MaquinaController extends Controller
 
     public function edit(string $id)
     {
-        $maquina    = Maquina::findOrFail($id);
-        $modelos    = Modelo::all();
+        $maquina     = Maquina::findOrFail($id);
+        $modelos     = Modelo::all();
         $fabricantes = Fabricante::all();
-        $setores    = Setor::all();
-        $statuses   = StatusMaquina::all();
+        $setores     = Setor::all();
+        $statuses    = StatusMaquina::all();
 
         return view('maquinas.edit', compact('maquina', 'modelos', 'fabricantes', 'setores', 'statuses'));
     }
@@ -74,7 +77,28 @@ class MaquinaController extends Controller
             'data_aquisicao'    => 'required|date',
             'id_setor'          => 'required|exists:setores,id_setor',
             'id_status_maquina' => 'required|exists:status_maquinas,id_status_maquina',
+            'status'            => 'nullable|boolean',
         ]);
+
+        if ($request->has('status')) {
+            $ativo = (bool) $request->status;
+            $validated['status'] = $ativo;
+
+            $statusAtual = StatusMaquina::find($validated['id_status_maquina']);
+            if ($ativo && $statusAtual && $statusAtual->estado_da_maquina === 'Inativa') {
+                $statusAtiva = StatusMaquina::where('estado_da_maquina', 'Ativa')->first();
+                if ($statusAtiva) {
+                    $validated['id_status_maquina'] = $statusAtiva->id_status_maquina;
+                }
+            }
+
+            if (!$ativo) {
+                $statusInativa = StatusMaquina::where('estado_da_maquina', 'Inativa')->first();
+                if ($statusInativa) {
+                    $validated['id_status_maquina'] = $statusInativa->id_status_maquina;
+                }
+            }
+        }
 
         $maquina->update($validated);
 
@@ -84,8 +108,16 @@ class MaquinaController extends Controller
     public function destroy(string $id)
     {
         $maquina = Maquina::findOrFail($id);
-        $maquina->delete();
 
-        return redirect()->route('maquinas.index')->with('success', 'Máquina excluída com sucesso!');
+        $dadosInativacao = ['status' => false];
+        
+        $statusInativa = StatusMaquina::where('estado_da_maquina', 'Inativa')->first();
+        if ($statusInativa) {
+            $dadosInativacao['id_status_maquina'] = $statusInativa->id_status_maquina;
+        }
+
+        $maquina->update($dadosInativacao);
+
+        return redirect()->route('maquinas.index')->with('success', 'Máquina inativada com sucesso!');
     }
 }
