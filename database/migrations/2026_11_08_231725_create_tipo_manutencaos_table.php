@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tipo_manutencaos', function (Blueprint $table) {
             $table->id('id_tipo_manutencao');
-            $table->enum('nome_manutencao', ['Preventiva', 'Corretiva', 'Preditiva', 'Inspeção']);
+            $table->string('nome_manutencao', 100)->unique();
             $table->string('descricao', 255)->nullable();
             $table->timestamps();
         });

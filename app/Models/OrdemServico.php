@@ -72,4 +72,9 @@ class OrdemServico extends Model
             'id_usuario'
         )->withTimestamps();
     }
+
+    public function parecer()
+    {
+        return $this->belongsTo(ParecerTecnico::class, 'id_parecer', 'id_parecer');
+    }
 }
