@@ -22,6 +22,8 @@ Agora que o vendor/autoload.php foi criado, execute:
 powershell
 C:\xampp\php\php.exe artisan migrate
 C:\xampp\php\php.exe artisan serve
+
+
 //_______________________________________________________________________________
 ------Para abrir no testar o sistema
 
