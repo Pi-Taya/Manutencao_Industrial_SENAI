@@ -8,6 +8,7 @@ use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrdemServicoController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PecaController;  //para pecas
 
 // Rotas públicas de Autenticação
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
