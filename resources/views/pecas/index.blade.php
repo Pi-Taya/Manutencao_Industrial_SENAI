@@ -23,3 +23,25 @@
             </tr>
         </thead>
         <tbody>
+        @foreach($pecas as $peca)
+            <tr>
+                <td><strong>{{ $peca->codigo_item }}</strong></td>
+                <td>{{ $peca->nome_peca }}</td>
+                <td><strong>{{ $peca->quantidade_estoque }} {{ $peca->unidade_medida }}</strong></td>
+                <td>{{ $peca->ultimoStatus->descricao_status_peca ?? 'Sem registro' }}</td>
+                <td>
+                    @if($peca->status)
+                        <span class="badge bg-success">Ativa</span>
+                    @else
+                        <span class="badge bg-secondary">Inativa</span>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('pecas.edit', $peca->id_peca) }}" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection
