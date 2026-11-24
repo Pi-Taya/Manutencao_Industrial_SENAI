@@ -32,4 +32,4 @@ Dentro do método show($id)  'pecas'
             ->get();
 
 Logo abaixo do fechamento do método atualizarStatus tambem foi mechido com dois metodos abaixo adicionarPeca e removerPeca
------> Se quiser comentar a e da linha 184 ate a linha 257
+-----> Se quiser comentar a e da linha 184 ate a linha 257.
