@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Peca extends Model
 {
@@ -43,5 +44,17 @@ class Peca extends Model
             'id_peca',
             'id_ordem_servico'
         )->withPivot(['id_utiliza', 'quantidade_utilizada'])->withTimestamps();
+    }
+
+    // --- NOVOS RELACIONAMENTOS PARA STATUS E FICHA TÉCNICA ---
+
+    public function statusPecas(): HasMany
+    {
+        return $this->hasMany(StatusPeca::class, 'id_peca', 'id_peca');
+    }
+
+    public function ultimoStatus(): HasOne
+    {
+        return $this->hasOne(StatusPeca::class, 'id_peca', 'id_peca')->latestOfMany('id_status_peca');
     }
 }
