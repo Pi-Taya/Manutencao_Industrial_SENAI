@@ -1,3 +1,13 @@
+-----Instalando dependencias laravel no poweshell
+
+composer install
+(Nota: Se aparecer o erro dizendo que 'composer' também não é reconhecido, use o caminho completo ou baixe o composer.phar direto na pasta do projeto rodando estes dois comandos):
+powershell
+C:\xampp\php\php.exe -r "copy('https://getcomposer.org', 'composer-setup.php');"
+C:\xampp\php\php.exe composer-setup.php
+C:\xampp\php\php.exe composer.phar install
+
+
 ------Para abrir no testar o sistema
 
 abrir o xampp de start no mysql e apache
@@ -13,7 +23,7 @@ C:\xampp\php\php.exe artisan serve
 
 ------Abrir o sistema
 
-cd C:\Users\Aluno\Downloads\Manutencao Industrial SENAI
+cd C:\Users\Aluno\Downloads\Manutencao_Industrial_SENAI
 
 php artisan migrate
 
