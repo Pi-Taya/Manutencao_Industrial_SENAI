@@ -42,3 +42,7 @@ Na linha 76 a 82
 
 9 - alteracao dentro de routes/web.php
 Na linha 18 a 20
+
+10 - na linha 24 a 26 foi adicionado o link logo abaixo de maquinas(link para a navegaçao)
+
+________________________________________________________________________________________________________________

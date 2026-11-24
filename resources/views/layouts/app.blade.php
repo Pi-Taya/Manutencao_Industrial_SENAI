@@ -21,7 +21,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('maquinas.index') }}">Máquinas</a>
                     </li>
+                    <li class="nav-item"><!--Adicionado aqui para pecas-->
+                        <a class="nav-link" href="{{ route('pecas.index') }}">Peças / Estoque</a>
+                    </li>
                 </ul>
+                
                 <form action="{{ route('logout') }}" method="POST" class="d-flex">
                     @csrf
                     <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
