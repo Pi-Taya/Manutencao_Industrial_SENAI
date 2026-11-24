@@ -39,3 +39,6 @@ ________________________________________________________________________________
 
 8 - Funcao nova adicionada dentro no app/Http/Models/OrdemServico.php
 Na linha 76 a 82
+
+9 - alteracao dentro de routes/web.php
+Na linha 18 a 20

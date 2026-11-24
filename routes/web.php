@@ -15,6 +15,10 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+//Rotas publicas para pecas para adicionar e deletar novas pecas
+Route::post('ordens/{id}/pecas', [OrdemServicoController::class, 'adicionarPeca'])->name('ordens.pecas.store');
+Route::delete('ordens/pecas/{id_utiliza}', [OrdemServicoController::class, 'removerPeca'])->name('ordens.pecas.destroy');
+
 // Rotas Protegidas por Autenticação
 Route::middleware(['auth'])->group(function () {
 
