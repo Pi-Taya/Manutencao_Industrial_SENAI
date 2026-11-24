@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Peca;//usado para pecas
+use App\Models\StatusPeca;//usado para pecas
+use App\Models\Utiliza;//usado para pecas
+use Illuminate\Support\Facades\DB;//usado para pecas
 
 class OrdemServicoController extends Controller
 {
@@ -98,13 +102,20 @@ class OrdemServicoController extends Controller
      */
     public function show($id)
     {
-        $ordem = OrdemServico::with([ 'maquina.setor', 'solicitante', 'tipoManutencao', 'prioridade', 'tecnicos.turno' ])->findOrFail($id);
+    //    --------------->                                                       Adicionado: carrega as peças já usadas nesta OS 'pecas'
+        $ordem = OrdemServico::with([ 'maquina.setor', 'solicitante', 'tipoManutencao', 'prioridade', 'tecnicos.turno', 'pecas' ])->findOrFail($id);
 
         // Lista apenas usuários ativos com perfil Técnico para seleção na OS
         $tecnicosDisponiveis = User::whereHas('perfil', function ($q) {$q->where('tipo_perfil', 'Técnico');
         })->where('status', true)->get();
 
-        return view('ordens.show', compact('ordem', 'tecnicosDisponiveis'));
+        // <-- Adicionado: busca peças ativas com saldo no almoxarifado
+        $pecasDisponiveis = Peca::where('status', true)
+            ->where('quantidade_estoque', '>', 0)
+            ->orderBy('nome_peca')
+            ->get();
+
+        return view('ordens.show', compact('ordem', 'tecnicosDisponiveis','pecasDisponiveis'));
     }
 
     /**
@@ -163,4 +174,85 @@ class OrdemServicoController extends Controller
         return redirect()->route('ordens.show', $ordem->id_ordem_servico)
             ->with('success', "Status da OS alterado para: {$novoStatus}");
     }
+
+
+
+
+    /**
+     * Vincular peça na OS e dar baixa automática no estoque UTILIZADO PARA PECAS//sabrina
+     */
+    public function adicionarPeca(Request $request, $id)
+    {
+        $request->validate([
+            'id_peca' => 'required|exists:pecas,id_peca',
+            'quantidade_utilizada' => 'required|integer|min:1',
+        ]);
+
+        $ordem = OrdemServico::findOrFail($id);
+        $peca = Peca::findOrFail($request->id_peca);
+
+        // Impede baixa maior que o saldo físico disponível
+        if ($peca->quantidade_estoque < $request->quantidade_utilizada) {
+            return redirect()->route('ordens.show', $ordem->id_ordem_servico)
+                ->withErrors(['quantidade_utilizada' => "Saldo insuficiente! Estoque atual de {$peca->nome_peca}: {$peca->quantidade_estoque} {$peca->unidade_medida}."]);
+        }
+
+        DB::transaction(function () use ($peca, $ordem, $request) {
+            // 1. Grava na tabela 'utilizas'
+            Utiliza::create([
+                'id_ordem_servico' => $ordem->id_ordem_servico,
+                'id_peca' => $peca->id_peca,
+                'quantidade_utilizada' => $request->quantidade_utilizada,
+            ]);
+
+            // 2. Abate do estoque da peça
+            $peca->decrement('quantidade_estoque', $request->quantidade_utilizada);
+
+            // 3. Registra no histórico 'status_pecas'
+            $alerta = $peca->quantidade_estoque == 0 ? ' [ALERTA: RUPTURA]' : '';
+            StatusPeca::create([
+                'id_peca' => $peca->id_peca,
+                'descricao_status_peca' => mb_substr(
+                    "Baixa OS #{$ordem->id_ordem_servico}: -{$request->quantidade_utilizada} {$peca->unidade_medida} (Restam: {$peca->quantidade_estoque}){$alerta}",
+                    0,
+                    200
+                ),
+            ]);
+        });
+
+        return redirect()->route('ordens.show', $ordem->id_ordem_servico)
+            ->with('success', 'Peça adicionada à OS e estoque atualizado!');
+    }
+
+    /**
+     * Remover peça da OS e estornar quantidade ao estoque
+     */
+    public function removerPeca($idUtiliza)
+    {
+        $utiliza = Utiliza::findOrFail($idUtiliza);
+        $peca = Peca::findOrFail($utiliza->id_peca);
+        $idOrdem = $utiliza->id_ordem_servico;
+
+        DB::transaction(function () use ($utiliza, $peca, $idOrdem) {
+            // 1. Devolve a quantidade ao estoque
+            $peca->increment('quantidade_estoque', $utiliza->quantidade_utilizada);
+
+            // 2. Registra o estorno em 'status_pecas'
+            StatusPeca::create([
+                'id_peca' => $peca->id_peca,
+                'descricao_status_peca' => mb_substr(
+                    "Estorno OS #{$idOrdem}: +{$utiliza->quantidade_utilizada} {$peca->unidade_medida} (Saldo: {$peca->quantidade_estoque})",
+                    0,
+                    200
+                ),
+            ]);
+
+            // 3. Exclui o vínculo
+            $utiliza->delete();
+        });
+
+        return redirect()->route('ordens.show', $idOrdem)
+            ->with('success', 'Peça removida da OS e devolvida ao estoque!');
+    }
+    //FIM DA UTILIZAÇAO PARA PEÇAS AQUI
 }

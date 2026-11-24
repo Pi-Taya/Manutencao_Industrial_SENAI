@@ -15,3 +15,21 @@ ________________MAPA___DOS___ARQUIVOS___________________
 • Criar: resources/views/pecas/index.blade.php
 • Criar: resources/views/pecas/create.blade.php
 • Criar: resources/views/pecas/edit.blade.php
+
+____________________________7-mudanca no OrdemServicoController adcionado _________________________________
+
+use App\Models\Peca;//usado para pecas
+use App\Models\StatusPeca;//usado para pecas
+use App\Models\Utiliza;//usado para pecas
+use Illuminate\Support\Facades\DB;//usado para pecas
+
+Dentro do método show($id)  'pecas'
+
+// Adicionado: busca peças ativas com saldo no almoxarifado
+        $pecasDisponiveis = Peca::where('status', true)
+            ->where('quantidade_estoque', '>', 0)
+            ->orderBy('nome_peca')
+            ->get();
+
+Logo abaixo do fechamento do método atualizarStatus tambem foi mechido com dois metodos abaixo adicionarPeca e removerPeca
+-----> Se quiser comentar a e da linha 184 ate a linha 257
