@@ -43,5 +43,9 @@ Route::middleware(['auth'])->group(function () {
         // Gestão de Usuários e Técnicos 
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
     });
+    
+    //para as pecas
+    Route::resource('pecas', PecaController::class);
+
 
 });
