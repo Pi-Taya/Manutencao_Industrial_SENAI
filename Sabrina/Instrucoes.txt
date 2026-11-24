@@ -1,3 +1,7 @@
 1- Peca.php dentro do app/Http/Models foi alterado pelo codigo que esta la
 2- Novo arquivo adcionado dentro do app/Models nome StatusPeca.php
 3- Novo arquivo adcionado dentro do app/Http/Controllers nome PecaController.php
+4- adicionado no routes/web.php os
+      // use App\Http\Controllers\PecaController;
+      //Route::resource('pecas', PecaController::class);
+      
