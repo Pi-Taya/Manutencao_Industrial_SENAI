@@ -72,4 +72,12 @@ class OrdemServico extends Model
             'id_usuario'
         )->withTimestamps();
     }
+
+    // funcao nova adicionada para peças
+    public function pecas()
+    {
+    return $this->belongsToMany(Peca::class, 'utilizas', 'id_ordem_servico', 'id_peca', 'id_ordem_servico', 'id_peca')
+        ->withPivot(['id_utiliza', 'quantidade_utilizada'])
+        ->withTimestamps();
+    }
 }
