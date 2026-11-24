@@ -6,3 +6,12 @@
       //Route::resource('pecas', PecaController::class);
 5-Criado uma nova pasta no resources/views chamada pecas junto com o index.blade.php
 6-Criado novo arquivo no resources/viewa/pecas chamado create.blade.php junto com o edit.blade.php
+
+________________MAPA___DOS___ARQUIVOS___________________
+• Atualizar: app/Models/Peca.php
+• Criar: app/Models/StatusPeca.php
+• Criar: app/Http/Controllers/PecaController.php
+• Editar: routes/web.php
+• Criar: resources/views/pecas/index.blade.php
+• Criar: resources/views/pecas/create.blade.php
+• Criar: resources/views/pecas/edit.blade.php
