@@ -46,3 +46,10 @@ Na linha 18 a 20
 10 - na linha 24 a 26 foi adicionado o link logo abaixo de maquinas(link para a navegaçao)
 
 ________________________________________________________________________________________________________________
+
+
+                 Resumo Final para Testar:
+
+1. Salve essa alteração no resources/views/layouts/app.blade.php.
+2. Verifique se todas as migrations já foram executadas no banco rodando php artisan migrate no terminal.
+3. Acesse o sistema no navegador, clique em Peças / Estoque no menu superior, cadastre uma peça e teste vinculá-la dentro de uma Ordem de Serviço.
