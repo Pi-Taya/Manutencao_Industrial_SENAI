@@ -1,0 +1,5 @@
+------Para abrir no testar o sistema
+
+php artisan migrate
+
+php artisan optimize:clear
