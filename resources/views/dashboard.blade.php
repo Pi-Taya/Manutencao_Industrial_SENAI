@@ -22,6 +22,7 @@
                 <li><a href="{{ route('setores.index') }}">Gerenciar Setores</a></li>
                 <li><a href="{{ route('fabricantes.index') }}">Gerenciar Fabricantes</a></li>
                 <li><a href="{{ route('modelos.index') }}">Gerenciar Modelos</a></li>
+                <li><a href="{{ route('pecas.index') }}">Gerenciar Peças</a></li>
             @endif
         </ul>
     </nav>
