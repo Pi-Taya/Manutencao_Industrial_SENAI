@@ -1,5 +1,20 @@
 ------Para abrir no testar o sistema
 
+
+
+
+
+
+
+------Abrir o sistema
+
 php artisan migrate
 
 php artisan optimize:clear
+
+php artisan serve
+
+O terminal vai exibir uma mensagem parecida com:
+INFO  Server running on [http://127.0.0.1:8000].
+(Mantenha essa janela do terminal aberta enquanto estiver testando; se fechar, o site sai do ar).
+
