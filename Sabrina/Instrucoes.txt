@@ -17,13 +17,15 @@ ________________MAPA___DOS___ARQUIVOS___________________
 • Criar: resources/views/pecas/edit.blade.php
 
 ____________________________7-mudanca no OrdemServicoController adcionado _________________________________
-
+           Na linha 14 a 17
 use App\Models\Peca;//usado para pecas
 use App\Models\StatusPeca;//usado para pecas
 use App\Models\Utiliza;//usado para pecas
 use Illuminate\Support\Facades\DB;//usado para pecas
 
-Dentro do método show($id)  'pecas'
+
+Dentro do método show($id)  'pecas' na linha 106
+
 
 // Adicionado: busca peças ativas com saldo no almoxarifado
         $pecasDisponiveis = Peca::where('status', true)
