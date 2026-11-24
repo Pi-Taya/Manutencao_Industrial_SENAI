@@ -1,12 +1,19 @@
 ------Para abrir no testar o sistema
 
+abrir o xampp de start no mysql e apache
 
+no terminal do xamp atraves do shell entrando na pasta do projeto atraves dos comandos a seguir
 
-
+Alternativa sem sair do terminal do VS Code: digite o caminho completo do PHP do XAMPP):
+powershell
+C:\xampp\php\php.exe artisan migrate
+C:\xampp\php\php.exe artisan serve
 
 
 
 ------Abrir o sistema
+
+cd C:\Users\Aluno\Downloads\Manutencao Industrial SENAI
 
 php artisan migrate
 
