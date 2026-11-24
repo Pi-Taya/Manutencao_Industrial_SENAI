@@ -1,6 +1,6 @@
 -----Instalando dependencias laravel no poweshell
-
-composer install
+//________________________________________________________________________________
+1- composer install
 (Nota: Se aparecer o erro dizendo que 'composer' também não é reconhecido, use o caminho completo ou baixe o composer.phar direto na pasta do projeto rodando estes dois comandos):
 powershell
 C:\xampp\php\php.exe -r "copy('https://getcomposer.org', 'composer-setup.php');"
@@ -8,6 +8,21 @@ C:\xampp\php\php.exe composer-setup.php
 C:\xampp\php\php.exe composer.phar install
 
 
+2. Configure o arquivo .env (Se ainda não existir)
+
+Como o projeto foi baixado recentemente, verifique na lista de arquivos à esquerda do VS Code se existe um arquivo chamado .env (e não apenas .env.example). Se não existir, rode:
+powershell
+copy .env.example .env
+C:\xampp\php\php.exe artisan key:generate
+
+
+3. Rode as Migrations e Ligue o Servidor
+
+Agora que o vendor/autoload.php foi criado, execute:
+powershell
+C:\xampp\php\php.exe artisan migrate
+C:\xampp\php\php.exe artisan serve
+//_______________________________________________________________________________
 ------Para abrir no testar o sistema
 
 abrir o xampp de start no mysql e apache
