@@ -27,3 +27,27 @@
                     @endforeach
                 </select>
             </div>
+            
+            <div class="col-md-6">
+                <label class="form-label">Estoque Atual *</label>
+                <input type="number" name="quantidade_estoque" class="form-control" value="{{ $peca->quantidade_estoque }}" min="0" required>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Novo Registro de Status / Observação (Opcional)</label>
+                <input type="text" name="observacao_status" class="form-control" placeholder="Ex: Reservado 1 UN para OS #105 ou Reposição recebida" maxlength="200">
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="status" id="status" {{ $peca->status ? 'checked' : '' }}>
+                    <label class="form-check-label" for="status">Peça Ativa no Sistema</label>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Atualizar Peça</button>
+                <a href="{{ route('pecas.index') }}" class="btn btn-secondary">Voltar</a>
+            </div>
+        </div>
+    </form>
