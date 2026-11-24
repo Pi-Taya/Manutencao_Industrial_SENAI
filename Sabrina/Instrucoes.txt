@@ -4,4 +4,4 @@
 4- adicionado no routes/web.php os
       // use App\Http\Controllers\PecaController;
       //Route::resource('pecas', PecaController::class);
-      
+5-Criado uma nova pasta no resources/views chamada pecas junto com o index.blade.php
