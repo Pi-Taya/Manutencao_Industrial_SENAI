@@ -35,3 +35,7 @@ Dentro do método show($id)  'pecas' na linha 106
 
 Logo abaixo do fechamento do método atualizarStatus tambem foi mechido com dois metodos abaixo adicionarPeca e removerPeca
 -----> Se quiser comentar a e da linha 184 ate a linha 257.
+________________________________________________________________________________________________________________
+
+8 - Funcao nova adicionada dentro no app/Http/Models/OrdemServico.php
+Na linha 76 a 82
