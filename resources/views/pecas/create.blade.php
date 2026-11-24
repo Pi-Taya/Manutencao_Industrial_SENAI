@@ -61,3 +61,12 @@
                 </div>
             </div>
 
+            <div class="col-12">
+                <button type="submit" class="btn btn-success">Salvar Peça</button>
+                <a href="{{ route('pecas.index') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>
+@endsection
+
