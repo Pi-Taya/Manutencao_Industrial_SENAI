@@ -17,3 +17,25 @@
                 <label class="form-label">Descrição Padronizada *</label>
                 <input type="text" name="nome_peca" class="form-control" placeholder="Ex: ROLAMENTO 6309-2Z SKF" maxlength="100" required>
             </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Unidade de Medida *</label>
+                <select name="unidade_medida" class="form-select" required>
+                    <option value="UN">UN - Unidade</option>
+                    <option value="KG">KG - Quilograma</option>
+                    <option value="L">L - Litro</option>
+                    <option value="M">M - Metro</option>
+                    <option value="CX">CX - Caixa</option>
+                    <option value="PCT">PCT - Pacote</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Estoque Atual *</label>
+                <input type="number" name="quantidade_estoque" class="form-control" value="0" min="0" required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Ponto de Pedido (Gatilho Compra) *</label>
+                <input type="number" name="ponto_pedido" class="form-control" value="2" min="0" required>
+            </div>
