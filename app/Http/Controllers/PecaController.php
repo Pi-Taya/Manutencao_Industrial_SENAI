@@ -46,7 +46,7 @@ class PecaController extends Controller
             : ($peca->quantidade_estoque <= $request->ponto_pedido ? 'Comprar (Abaixo PP)' : 'Normal');
 
         // Monta a ficha resumida para salvar em 'status_pecas' (limite de 200 caracteres)
-        $descrica = "Crit: {$request->criticidade} | PP: {$request->ponto_pedido} | {$situacao}";
+        $descricao = "Crit: {$request->criticidade} | PP: {$request->ponto_pedido} | {$situacao}";
         if ($request->filled('localizacao')) {
             $descricao .= " | Loc: {$request->localizacao}";
         }
