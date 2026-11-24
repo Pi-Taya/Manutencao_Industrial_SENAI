@@ -27,7 +27,7 @@
                     @endforeach
                 </select>
             </div>
-            
+
             <div class="col-md-6">
                 <label class="form-label">Estoque Atual *</label>
                 <input type="number" name="quantidade_estoque" class="form-control" value="{{ $peca->quantidade_estoque }}" min="0" required>
@@ -51,3 +51,20 @@
             </div>
         </div>
     </form>
+    <!--//________________________________________________//
+             Histórico da tabela status_pecas -->
+    <div class="mt-4">
+        <h5>Histórico de Status / Ficha Técnica</h5>
+        <ul class="list-group">
+            @forelse($peca->statusPecas as $st)
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ $st->descricao_status_peca }}</span>
+                    <small class="text-muted">{{ $st->created_at->format('d/m/Y H:i') }}</small>
+                </li>
+            @empty
+                <li class="list-group-item text-muted">Nenhum histórico registrado.</li>
+            @endforelse
+        </ul>
+    </div>
+</div>
+@endsection
