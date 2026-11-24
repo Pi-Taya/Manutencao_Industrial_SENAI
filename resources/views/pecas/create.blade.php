@@ -39,3 +39,25 @@
                 <label class="form-label">Ponto de Pedido (Gatilho Compra) *</label>
                 <input type="number" name="ponto_pedido" class="form-control" value="2" min="0" required>
             </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Criticidade (XYZ) *</label>
+                <select name="criticidade" class="form-select" required>
+                    <option value="X">Classe X - Alta (Crítica)</option>
+                    <option value="Y" selected>Classe Y - Média</option>
+                    <option value="Z">Classe Z - Baixa</option>
+                </select>
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label">Localização Física / Armazenamento</label>
+                <input type="text" name="localizacao" class="form-control" placeholder="Ex: Corredor B - Prat. 03 - Gav. 12 (Local seco)" maxlength="80">
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="status" id="status" checked>
+                    <label class="form-check-label" for="status">Peça Ativa no Sistema</label>
+                </div>
+            </div>
+
