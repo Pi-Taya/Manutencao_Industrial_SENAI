@@ -74,6 +74,24 @@
         </div>
         <br>
 
+        @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'PCM']))
+            <fieldset>
+                <legend>Planejamento (opcional)</legend>
+
+                <label for="id_chamado">ID do chamado relacionado:</label><br>
+                <input type="number" id="id_chamado" name="id_chamado" min="1" value="{{ old('id_chamado') }}">
+                <br><br>
+
+                <label for="data_programada">Data programada:</label><br>
+                <input type="datetime-local" id="data_programada" name="data_programada" value="{{ old('data_programada') }}">
+                <br><br>
+
+                <label for="observacoes_pcm">Observações do PCM:</label><br>
+                <textarea id="observacoes_pcm" name="observacoes_pcm" rows="3" cols="50">{{ old('observacoes_pcm') }}</textarea>
+            </fieldset>
+            <br>
+        @endif
+
         <!-- Parou Produção -->
         <div>
             <label for="parou_producao">

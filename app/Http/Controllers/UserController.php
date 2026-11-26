@@ -12,16 +12,18 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    private const PERFIS_GERENCIAVEIS_PELO_GESTOR = ['Técnico', 'Operador'];
+
     public function index(Request $request)
     {
         $userLogado = Auth::user();
 
         $usersQuery = User::with(['perfil', 'turno', 'setor']);
 
-        // Gestor visualiza apenas Técnicos
+        // Gestores administram usuários operacionais, mas não perfis de governança.
         if ($userLogado->perfil->tipo_perfil === 'Gestor') {
             $usersQuery->whereHas('perfil', function ($q) {
-                $q->where('tipo_perfil', 'Técnico');
+                $q->whereIn('tipo_perfil', self::PERFIS_GERENCIAVEIS_PELO_GESTOR);
             });
         }
 
@@ -56,8 +58,10 @@ class UserController extends Controller
 
         if ($userLogado->perfil->tipo_perfil === 'Administrador') {
             $perfis = Perfil::all();
+        } elseif ($userLogado->perfil->tipo_perfil === 'Gestor') {
+            $perfis = Perfil::whereIn('tipo_perfil', self::PERFIS_GERENCIAVEIS_PELO_GESTOR)->get();
         } else {
-            $perfis = Perfil::where('tipo_perfil', 'Técnico')->get();
+            abort(403);
         }
 
         $turnos = Turno::all();
@@ -69,11 +73,6 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $userLogado = Auth::user();
-        $perfilSelecionado = Perfil::findOrFail($request->id_perfil);
-
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilSelecionado->tipo_perfil !== 'Técnico') {
-            return back()->withErrors(['id_perfil' => 'Gestores só podem cadastrar o perfil de Técnico.'])->withInput();
-        }
 
         $validated = $request->validate([
             'nome_usuario'  => 'required|string|max:100',
@@ -84,6 +83,16 @@ class UserController extends Controller
             'id_setor'      => 'required|exists:setores,id_setor',
             'especialidade' => 'nullable|string|max:100',
         ]);
+
+        $perfilSelecionado = Perfil::findOrFail($validated['id_perfil']);
+        if (
+            $userLogado->perfil->tipo_perfil === 'Gestor'
+            && !in_array($perfilSelecionado->tipo_perfil, self::PERFIS_GERENCIAVEIS_PELO_GESTOR, true)
+        ) {
+            return back()->withErrors([
+                'id_perfil' => 'Gestores só podem cadastrar usuários operacionais.',
+            ])->withInput();
+        }
 
         User::create([
             'nome_usuario'  => $validated['nome_usuario'],
@@ -104,15 +113,20 @@ class UserController extends Controller
         $userLogado = Auth::user();
         $usuario = User::findOrFail($id);
 
-        // Bloqueio de acesso se um Gestor tentar editar um Admin/Gestor pela URL
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
-            abort(403, 'Ação não autorizada. Gestores só podem editar técnicos.');
+        // Gestores não podem alterar perfis de governança nem outros gestores.
+        if (
+            $userLogado->perfil->tipo_perfil === 'Gestor'
+            && !in_array($usuario->perfil->tipo_perfil, self::PERFIS_GERENCIAVEIS_PELO_GESTOR, true)
+        ) {
+            abort(403, 'Ação não autorizada para este perfil.');
         }
 
         if ($userLogado->perfil->tipo_perfil === 'Administrador') {
             $perfis = Perfil::all();
+        } elseif ($userLogado->perfil->tipo_perfil === 'Gestor') {
+            $perfis = Perfil::whereIn('tipo_perfil', self::PERFIS_GERENCIAVEIS_PELO_GESTOR)->get();
         } else {
-            $perfis = Perfil::where('tipo_perfil', 'Técnico')->get();
+            abort(403);
         }
 
         $turnos = Turno::all();
@@ -126,8 +140,11 @@ class UserController extends Controller
         $userLogado = Auth::user();
         $usuario = User::findOrFail($id);
 
-        // Bloqueio de acesso para Gestores alterarem Admins/Gestores
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
+        // Gestores só podem alterar usuários operacionais.
+        if (
+            $userLogado->perfil->tipo_perfil === 'Gestor'
+            && !in_array($usuario->perfil->tipo_perfil, self::PERFIS_GERENCIAVEIS_PELO_GESTOR, true)
+        ) {
             abort(403, 'Ação não autorizada.');
         }
 
@@ -159,9 +176,14 @@ class UserController extends Controller
             }
         }
 
-        // Regra para Gestores
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $perfilNovo->tipo_perfil !== 'Técnico') {
-            return back()->withErrors(['id_perfil' => 'Gestores só podem atribuir o perfil de Técnico.'])->withInput();
+        // Gestores não podem atribuir perfis de governança ou planejamento.
+        if (
+            $userLogado->perfil->tipo_perfil === 'Gestor'
+            && !in_array($perfilNovo->tipo_perfil, self::PERFIS_GERENCIAVEIS_PELO_GESTOR, true)
+        ) {
+            return back()->withErrors([
+                'id_perfil' => 'Gestores só podem atribuir perfis operacionais.',
+            ])->withInput();
         }
 
         $usuario->nome_usuario  = $validated['nome_usuario'];
@@ -186,8 +208,11 @@ class UserController extends Controller
         $userLogado = Auth::user();
         $usuario = User::with(['perfil', 'turno', 'setor'])->findOrFail($id);
 
-        // Se for Gestor, só pode visualizar detalhes de Técnicos
-        if ($userLogado->perfil->tipo_perfil === 'Gestor' && $usuario->perfil->tipo_perfil !== 'Técnico') {
+        // Gestores só podem consultar usuários operacionais.
+        if (
+            $userLogado->perfil->tipo_perfil === 'Gestor'
+            && !in_array($usuario->perfil->tipo_perfil, self::PERFIS_GERENCIAVEIS_PELO_GESTOR, true)
+        ) {
             abort(403, 'Ação não autorizada.');
         }
 

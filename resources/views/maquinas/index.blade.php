@@ -30,6 +30,7 @@
                 <th>Setor</th>
                 <th>Fabricante</th>
                 <th>Data de Aquisição</th>
+                <th>Criticidade</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
@@ -43,6 +44,10 @@
                     <td>{{ $maquina->setor->nome_setor ?? 'N/A' }}</td>
                     <td>{{ $maquina->fabricante->nome_fabricante ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($maquina->data_aquisicao)->format('d/m/Y') }}</td>
+                    <td>
+                        {{ $maquina->criticidade }} —
+                        {{ [1 => 'Muito Baixa', 2 => 'Baixa', 3 => 'Moderada', 4 => 'Alta', 5 => 'Crítica'][$maquina->criticidade] ?? 'N/A' }}
+                    </td>
                     <td>{{ $maquina->statusMaquina->estado_da_maquina ?? 'N/A' }}</td>
                     <td>
                         <a href="{{ route('maquinas.show', $maquina->id_maquina) }}">Visualizar</a>
@@ -59,7 +64,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8">Nenhuma máquina cadastrada até o momento.</td>
+                    <td colspan="9">Nenhuma máquina cadastrada até o momento.</td>
                 </tr>
             @endforelse
         </tbody>

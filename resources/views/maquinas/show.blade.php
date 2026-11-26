@@ -6,8 +6,10 @@
 </head>
 <body>
     <h1>Detalhes da Máquina: {{ $maquina->nome_maquina }}</h1>
-    <a href="{{ route('maquinas.index') }}">Voltar à Lista</a> | 
-    <a href="{{ route('maquinas.edit', $maquina->id_maquina) }}">Editar</a>
+    <a href="{{ route('maquinas.index') }}">Voltar à Lista</a>
+    @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'Administrador']))
+        | <a href="{{ route('maquinas.edit', $maquina->id_maquina) }}">Editar</a>
+    @endif
 
     <table border="1" cellpadding="8" style="margin-top: 15px; border-collapse: collapse;">
         <tr>
@@ -37,6 +39,13 @@
         <tr>
             <th>Status:</th>
             <td>{{ $maquina->statusMaquina->estado_da_maquina ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Criticidade:</th>
+            <td>
+                {{ $maquina->criticidade }} —
+                {{ [1 => 'Muito Baixa', 2 => 'Baixa', 3 => 'Moderada', 4 => 'Alta', 5 => 'Crítica'][$maquina->criticidade] ?? 'N/A' }}
+            </td>
         </tr>
     </table>
 </body>

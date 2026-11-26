@@ -24,10 +24,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Perfis
-        foreach (['Técnico', 'Gestor', 'Administrador'] as $tipoPerfil) {
-            Perfil::firstOrCreate(['tipo_perfil' => $tipoPerfil]);
-        }
+        // 1. Perfis de acesso
+        $this->call(PerfilSeeder::class);
 
         // 2. Turnos Padronizados (Escala Industrial)
         foreach (['1º Turno', '2º Turno', '3º Turno', 'Comercial'] as $nomeTurno) {

@@ -26,14 +26,19 @@ class OrdemServico extends Model
         'data_inicio_atendimento',
         'data_fechamento',
         'tempo_parada_minutos',
+        'id_chamado',
+        'data_programada',
+        'observacoes_pcm',
     ];
 
     protected $casts = [
+        'id_chamado'              => 'integer',
         'parou_producao'          => 'boolean',
         'data_abertura'           => 'datetime',
         'data_previsao'           => 'datetime',
         'data_inicio_atendimento' => 'datetime',
         'data_fechamento'         => 'datetime',
+        'data_programada'         => 'datetime',
     ];
 
     // Relacionamento com o Solicitante

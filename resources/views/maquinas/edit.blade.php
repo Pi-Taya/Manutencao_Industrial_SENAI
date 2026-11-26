@@ -93,6 +93,18 @@
         <br>
 
         <div>
+            <label for="criticidade">Criticidade *:</label><br>
+            <select id="criticidade" name="criticidade" required>
+                @foreach([1 => 'Muito Baixa', 2 => 'Baixa', 3 => 'Moderada', 4 => 'Alta', 5 => 'Crítica'] as $valor => $rotulo)
+                    <option value="{{ $valor }}" {{ old('criticidade', $maquina->criticidade ?? 3) == $valor ? 'selected' : '' }}>
+                        {{ $valor }} — {{ $rotulo }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <br>
+
+        <div>
             <label for="status">Situação no Cadastro *:</label><br>
             <select id="status" name="status" required>
                 <option value="1" {{ old('status', $maquina->status ? '1' : '0') == '1' ? 'selected' : '' }}>Ativa (Disponível para OS)</option>

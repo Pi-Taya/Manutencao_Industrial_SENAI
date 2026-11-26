@@ -66,7 +66,21 @@ class OrdemServicoController extends Controller
             'id_status_prioridade' => 'required|exists:status_prioridades,id_status_prioridade',
             'descricao_falha'      => 'required|string|max:255',
             'parou_producao'       => 'nullable|boolean',
+            'id_chamado'           => 'nullable|integer|min:1',
+            'data_programada'      => 'nullable|date',
+            'observacoes_pcm'      => 'nullable|string',
         ]);
+
+        $perfil = Auth::user()->perfil->tipo_perfil ?? '';
+        $podePlanejar = in_array($perfil, ['Gestor', 'PCM'], true);
+
+        $enviouDadosPlanejamento = $request->filled('id_chamado')
+            || $request->filled('data_programada')
+            || $request->filled('observacoes_pcm');
+
+        if (!$podePlanejar && $enviouDadosPlanejamento) {
+            abort(403, 'Somente Gestor ou PCM podem informar dados de planejamento.');
+        }
 
         $prioridade = StatusPrioridade::findOrFail($request->id_status_prioridade);
 
@@ -87,6 +101,9 @@ class OrdemServicoController extends Controller
             'status'               => 'Aberta',
             'data_abertura'        => Carbon::now(),
             'data_previsao'        => $dataPrevisao,
+            'id_chamado'           => $podePlanejar ? $request->input('id_chamado') : null,
+            'data_programada'      => $podePlanejar ? $request->input('data_programada') : null,
+            'observacoes_pcm'      => $podePlanejar ? $request->input('observacoes_pcm') : null,
         ]);
 
         // 2. Regra de Negócio RN04: Atualiza a máquina para "Em Manutenção" se parou a produção

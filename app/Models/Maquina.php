@@ -21,6 +21,7 @@ class Maquina extends Model
         'nome_maquina',
         'data_aquisicao',
         'status',
+        'criticidade',
     ];
 
     protected function casts(): array
@@ -28,6 +29,7 @@ class Maquina extends Model
         return [
             'data_aquisicao' => 'datetime',
             'status' => 'boolean',
+            'criticidade' => 'integer',
         ];
     }
 

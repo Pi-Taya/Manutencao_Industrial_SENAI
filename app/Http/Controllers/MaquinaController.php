@@ -38,6 +38,7 @@ class MaquinaController extends Controller
             'data_aquisicao'    => 'required|date',
             'id_setor'          => 'required|exists:setores,id_setor',
             'id_status_maquina' => 'required|exists:status_maquinas,id_status_maquina',
+            'criticidade'       => 'required|integer|min:1|max:5',
         ]);
 
         
@@ -77,6 +78,7 @@ class MaquinaController extends Controller
             'data_aquisicao'    => 'required|date',
             'id_setor'          => 'required|exists:setores,id_setor',
             'id_status_maquina' => 'required|exists:status_maquinas,id_status_maquina',
+            'criticidade'       => 'required|integer|min:1|max:5',
             'status'            => 'nullable|boolean',
         ]);
 

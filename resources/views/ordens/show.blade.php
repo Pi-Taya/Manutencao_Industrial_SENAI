@@ -8,10 +8,10 @@
     @php
         $usuarioLogado = Auth::user();
         $perfilUsuario = $usuarioLogado->perfil->tipo_perfil ?? '';
-        $isGestorOuAdmin = in_array($perfilUsuario, ['Gestor', 'Administrador']);
+        $isGestor = $perfilUsuario === 'Gestor';
         $isTecnicoAlocado = $ordem->tecnicos->contains('id_usuario', $usuarioLogado->id_usuario);
         $osConcluida = ($ordem->status === 'Concluída');
-        $podeExecutarOs = !$osConcluida && ($isGestorOuAdmin || $isTecnicoAlocado);
+        $podeExecutarOs = !$osConcluida && ($isGestor || ($perfilUsuario === 'Técnico' && $isTecnicoAlocado));
     @endphp
 
     <h1>Ordem de Serviço #{{ $ordem->id_ordem_servico }}</h1>
@@ -45,6 +45,13 @@
         <li><strong>Parou Produção:</strong> {{ $ordem->parou_producao ? 'SIM (Máquina Parada)' : 'NÃO' }}</li>
         <li><strong>Prioridade:</strong> {{ $ordem->prioridade->nome_prioridade ?? 'N/A' }}</li>
         <li><strong>Tipo de Manutenção:</strong> {{ $ordem->tipoManutencao->nome_manutencao ?? 'N/A' }}</li>
+        @if($ordem->id_chamado)
+            <li><strong>Chamado relacionado:</strong> #{{ $ordem->id_chamado }}</li>
+        @endif
+        <li><strong>Data programada:</strong> {{ $ordem->data_programada ? $ordem->data_programada->format('d/m/Y H:i') : 'Não programada' }}</li>
+        @if($ordem->observacoes_pcm)
+            <li><strong>Observações do PCM:</strong> {{ $ordem->observacoes_pcm }}</li>
+        @endif
     </ul>
 
     <!-- Formulário de Alteração de Status -->
@@ -97,7 +104,7 @@
     @endif
 
     <!-- Formulário para alocar técnicos -->
-    @if(!$osConcluida && $isGestorOuAdmin)
+    @if(!$osConcluida && $isGestor)
         <form action="{{ route('ordens.alocar', $ordem->id_ordem_servico) }}" method="POST">
             @csrf
             <p><strong>Selecionar Técnicos Responsáveis:</strong></p>

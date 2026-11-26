@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Perfil extends Model
 {
+    public const TIPOS = ['Administrador', 'Gestor', 'PCM', 'Técnico', 'Operador'];
+
     protected $table = 'perfis'; // <- Corrigido de 'perfils' para 'perfis'
 
     protected $primaryKey = 'id_perfil';

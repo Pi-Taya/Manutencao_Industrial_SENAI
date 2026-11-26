@@ -15,12 +15,22 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('ordens.index') }}">Ordens de Serviço</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('maquinas.index') }}">Máquinas</a>
-                    </li>
+                    @php($perfilAtual = auth()->user()->perfil->tipo_perfil ?? '')
+                    @if(in_array($perfilAtual, ['Técnico', 'Gestor', 'PCM']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('ordens.index') }}">Ordens de Serviço</a>
+                        </li>
+                    @endif
+                    @if(in_array($perfilAtual, ['Técnico', 'Gestor', 'Administrador']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('maquinas.index') }}">Máquinas</a>
+                        </li>
+                    @endif
+                    @if(in_array($perfilAtual, ['Gestor', 'Administrador']))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('users.index') }}">Cadastros</a>
+                        </li>
+                    @endif
                 </ul>
                 <form action="{{ route('logout') }}" method="POST" class="d-flex">
                     @csrf

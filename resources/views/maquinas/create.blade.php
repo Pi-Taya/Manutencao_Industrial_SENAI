@@ -128,6 +128,18 @@
         </div>
         <br>
 
+        <div>
+            <label for="criticidade">Criticidade *:</label><br>
+            <select id="criticidade" name="criticidade" required>
+                @foreach([1 => 'Muito Baixa', 2 => 'Baixa', 3 => 'Moderada', 4 => 'Alta', 5 => 'Crítica'] as $valor => $rotulo)
+                    <option value="{{ $valor }}" {{ old('criticidade', 3) == $valor ? 'selected' : '' }}>
+                        {{ $valor }} — {{ $rotulo }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <br>
+
         <button type="submit">Salvar Máquina</button>
         <a href="{{ route('maquinas.index') }}">Cancelar</a>
     </form>
