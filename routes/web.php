@@ -18,43 +18,53 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Rotas Protegidas por Autenticação
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard Principal
-    Route::get('/', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Painel Geral: Acesso para Administrador, Gestor, PCM e Técnico (Operador = Não)
+    Route::middleware(['perfil:Administrador,Gestor,PCM,Técnico'])->group(function () {
+        Route::get('/', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
 
-    // Cadastros e governança operacional: Gestor e Administrador.
+    // Rota provisória para o Operador enquanto o módulo de Chamados não é integrado
+    Route::middleware(['perfil:Administrador,Gestor,PCM,Técnico,Operador'])->group(function () {
+        Route::get('/chamados-aguardando', function () {
+            return 'Área do Operador — Módulo de Chamados em desenvolvimento.';
+        })->name('chamados.aguardando');
+    });
+
+    // Módulo Cadastro (Somente Administrador e Gestor)
     Route::middleware(['perfil:Gestor,Administrador'])->group(function () {
         Route::resource('setores', SetorController::class);
         Route::resource('fabricantes', FabricanteController::class);
         Route::resource('modelos', ModeloController::class);
         Route::resource('tipos-manutencao', TipoManutencaoController::class)->except(['show']);
         
-        // Gestão de Usuários e Técnicos 
+        // Gestão de Usuários
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
 
         // Cadastro, edição e exclusão de máquinas
         Route::resource('maquinas', MaquinaController::class)->except(['index', 'show']);
     });
 
-    // Consulta de máquinas para Gestor, Administrador e Técnico.
-    Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
+    // Consulta de máquinas (Gestor, Administrador, PCM e Técnico)
+    Route::middleware(['perfil:Técnico,PCM,Gestor,Administrador'])->group(function () {
         Route::resource('maquinas', MaquinaController::class)->only(['index', 'show']);
     });
 
-    // Consulta e abertura de Ordens: Administrador e Operador não atuam neste módulo.
-    Route::middleware(['perfil:Técnico,Gestor,PCM'])->group(function () {
+    // Ordens de Serviço - Consulta e Abertura (Administrador, Gestor, PCM e Técnico; Operador = Não)
+    Route::middleware(['perfil:Administrador,Gestor,PCM,Técnico'])->group(function () {
         Route::resource('ordens', OrdemServicoController::class)
             ->only(['index', 'create', 'store', 'show']);
     });
 
-    // Execução de OS: PCM consulta e planeja, mas não altera execução nem parecer.
+    // Ordens de Serviço - Execução Técnica e Parecer (Técnico e Gestor)
     Route::middleware(['perfil:Técnico,Gestor'])->group(function () {
         Route::patch('ordens/{id}/status', [OrdemServicoController::class, 'atualizarStatus'])->name('ordens.status');
         Route::post('ordens/{id}/parecer', [OrdemServicoController::class, 'registrarParecer'])->name('ordens.parecer');
     });
 
-    Route::middleware(['perfil:Gestor'])->group(function () {
+    // Ordens de Serviço - Alocação e Exclusão (Gestor e Administrador)
+    Route::middleware(['perfil:Gestor,Administrador'])->group(function () {
         Route::post('ordens/{id}/alocar-tecnicos', [OrdemServicoController::class, 'alocarTecnicos'])->name('ordens.alocar');
         Route::delete('ordens/{ordem}', [OrdemServicoController::class, 'destroy'])->name('ordens.destroy');
     });

@@ -43,7 +43,7 @@
     
     <nav>
         <ul>
-            @if(in_array($perfilAtual, ['Técnico', 'Gestor', 'PCM']))
+            @if(in_array($perfilAtual, ['Técnico', 'Gestor', 'PCM', 'Administrador']))
                 <li><a href="{{ route('ordens.index') }}">Ordens de Serviço</a></li>
             @endif
 

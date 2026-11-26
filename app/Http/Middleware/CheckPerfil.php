@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPerfil
@@ -26,13 +27,22 @@ class CheckPerfil
         // Verifica se o utilizador está ativo
         if (!$user->status) {
             Auth::logout();
-            return redirect()->route('login')->withErrors(['email' => 'A sua conta está inativa. Contacte o administrador.']);
+            return redirect()->route('login')->withErrors([
+                'email' => 'A sua conta está inativa. Contacte o administrador.'
+            ]);
         }
 
-        // Obtém o nome do perfil
+        // Obtém e normaliza o nome do perfil (remove acentos e coloca em minúsculas)
         $tipoPerfil = $user->perfil->tipo_perfil ?? null;
 
-        if (!$tipoPerfil || !in_array($tipoPerfil, $perfis)) {
+        if (!$tipoPerfil) {
+            abort(403, 'Utilizador sem perfil atribuído.');
+        }
+
+        $perfilNormalizado = Str::ascii(mb_strtolower(trim($tipoPerfil)));
+        $permitidos = array_map(fn($p) => Str::ascii(mb_strtolower(trim($p))), $perfis);
+
+        if (!in_array($perfilNormalizado, $permitidos, true)) {
             abort(403, 'Acesso não autorizado para o seu perfil de utilizador.');
         }
 
