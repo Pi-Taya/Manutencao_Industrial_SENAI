@@ -58,3 +58,5 @@ C:\xampp\php\php.exe artisan db:seed
 
 C:\xampp\php\php.exe artisan serve
 
+admin@manutencao.test
+senha:password
