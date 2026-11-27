@@ -52,3 +52,9 @@ O terminal vai exibir uma mensagem parecida com:
 INFO  Server running on [http://127.0.0.1:8000].
 (Mantenha essa janela do terminal aberta enquanto estiver testando; se fechar, o site sai do ar).
 
+---> seed para o usuario
+
+C:\xampp\php\php.exe artisan db:seed
+
+C:\xampp\php\php.exe artisan serve
+
