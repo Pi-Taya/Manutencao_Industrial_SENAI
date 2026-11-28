@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalhes da Máquina</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Detalhes da máquina - PITAYA Control')
+
+@section('content')
     <h1>Detalhes da Máquina: {{ $maquina->nome_maquina }}</h1>
     <a href="{{ route('maquinas.index') }}">Voltar à Lista</a>
     @if(in_array(auth()->user()->perfil->tipo_perfil ?? '', ['Gestor', 'Administrador']))
         | <a href="{{ route('maquinas.edit', $maquina->id_maquina) }}">Editar</a>
     @endif
 
-    <table border="1" cellpadding="8" style="margin-top: 15px; border-collapse: collapse;">
+    <div class="table-wrap">
+    <table>
         <tr>
             <th>Código TAG:</th>
             <td>{{ $maquina->codigo_tag }}</td>
@@ -34,7 +33,7 @@
         </tr>
         <tr>
             <th>Data de Aquisição:</th>
-            <td>{{ \Carbon\Carbon::parse($maquina->data_aquisicao)->format('d/m/Y') }}</td>
+            <td>{{ $maquina->data_aquisicao?->format('d/m/Y') ?? 'N/A' }}</td>
         </tr>
         <tr>
             <th>Status:</th>
@@ -48,5 +47,5 @@
             </td>
         </tr>
     </table>
-</body>
-</html>
+    </div>
+@endsection

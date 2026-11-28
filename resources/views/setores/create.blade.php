@@ -1,37 +1,26 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Setor</title>
-</head>
-<body>
-    <h1>Cadastrar Novo Setor</h1>
-    <a href="{{ route('setores.index') }}">Voltar à Lista de Setores</a>
+@extends('layouts.app')
 
-    @if ($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+@section('title', 'Cadastrar setor - PITAYA Control')
+
+@section('content')
+    <h1>Cadastrar novo setor</h1>
+    @if($errors->any())
+        <div class="alert alert-error"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
     @endif
 
-    <form action="{{ route('setores.store') }}" method="POST" style="margin-top: 15px;">
+    <form action="{{ route('setores.store') }}" method="POST" class="card">
         @csrf
-        <div>
-            <label for="nome_setor">Nome do Setor *:</label><br>
+        <div class="form-field">
+            <label for="nome_setor">Nome do setor *</label>
             <input type="text" id="nome_setor" name="nome_setor" value="{{ old('nome_setor') }}" required>
         </div>
-        <br>
-        <div>
-            <label for="descricao">Descrição:</label><br>
+        <div class="form-field">
+            <label for="descricao">Descrição</label>
             <textarea id="descricao" name="descricao" rows="3">{{ old('descricao') }}</textarea>
         </div>
-        <br>
-        <button type="submit">Salvar Setor</button>
-        <a href="{{ route('setores.index') }}">Cancelar</a>
+        <div class="form-actions">
+            <button type="submit">Salvar setor</button>
+            <a class="button button-secondary" href="{{ route('setores.index') }}">Cancelar</a>
+        </div>
     </form>
-</body>
-</html>
+@endsection

@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Máquina</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Editar máquina - PITAYA Control')
+
+@section('content')
     <h1>Editar Máquina</h1>
     <a href="{{ route('maquinas.index') }}">Voltar à Lista de Máquinas</a>
 
     @if ($errors->any())
-        <div style="color: red;">
+        <div class="alert alert-error">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -18,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('maquinas.update', $maquina->id_maquina) }}" method="POST" style="margin-top: 15px;">
+    <form action="{{ route('maquinas.update', $maquina->id_maquina) }}" method="POST" class="card">
         @csrf
         @method('PUT')
 
@@ -116,5 +114,4 @@
         <button type="submit">Atualizar Máquina</button>
         <a href="{{ route('maquinas.index') }}">Cancelar</a>
     </form>
-</body>
-</html>
+@endsection

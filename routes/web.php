@@ -58,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Ordens de Serviço - Execução Técnica e Parecer (Técnico e Gestor)
-    Route::middleware(['perfil:Técnico,Gestor'])->group(function () {
+    Route::middleware(['perfil:Técnico,Gestor,Administrador'])->group(function () {
         Route::patch('ordens/{id}/status', [OrdemServicoController::class, 'atualizarStatus'])->name('ordens.status');
         Route::post('ordens/{id}/parecer', [OrdemServicoController::class, 'registrarParecer'])->name('ordens.parecer');
     });

@@ -1,49 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Modelo</title>
-</head>
-<body>
-    <h1>Cadastrar Novo Modelo</h1>
-    <a href="{{ route('modelos.index') }}">Voltar à Lista</a>
+@extends('layouts.app')
 
-    @if ($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+@section('title', 'Cadastrar modelo - PITAYA Control')
+
+@section('content')
+    <h1>Cadastrar novo modelo</h1>
+    @if($errors->any())
+        <div class="alert alert-error"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
     @endif
 
-    <form action="{{ route('modelos.store') }}" method="POST" style="margin-top: 15px;">
+    <form action="{{ route('modelos.store') }}" method="POST" class="card">
         @csrf
-        <div>
-            <label for="nome_modelo">Nome do Modelo *:</label><br>
+        <div class="form-field">
+            <label for="nome_modelo">Nome do modelo *</label>
             <input type="text" id="nome_modelo" name="nome_modelo" value="{{ old('nome_modelo') }}" required>
         </div>
-        <br>
-        <div>
-            <label for="id_fabricante">Fabricante *:</label><br>
+        <div class="form-field">
+            <label for="id_fabricante">Fabricante *</label>
             <select id="id_fabricante" name="id_fabricante" required>
-                <option value="">Selecione o Fabricante</option>
+                <option value="">Selecione</option>
                 @foreach($fabricantes as $fabricante)
-                    <option value="{{ $fabricante->id_fabricante }}" {{ old('id_fabricante') == $fabricante->id_fabricante ? 'selected' : '' }}>
-                        {{ $fabricante->nome_fabricante }}
-                    </option>
+                    <option value="{{ $fabricante->id_fabricante }}" {{ old('id_fabricante') == $fabricante->id_fabricante ? 'selected' : '' }}>{{ $fabricante->nome_fabricante }}</option>
                 @endforeach
             </select>
         </div>
-        <br>
-        <div>
-            <label for="especificacoes_tecnicas">Especificações Técnicas:</label><br>
+        <div class="form-field">
+            <label for="especificacoes_tecnicas">Especificações técnicas</label>
             <textarea id="especificacoes_tecnicas" name="especificacoes_tecnicas" rows="4">{{ old('especificacoes_tecnicas') }}</textarea>
         </div>
-        <br>
-        <button type="submit">Salvar Modelo</button>
-        <a href="{{ route('modelos.index') }}">Cancelar</a>
+        <div class="form-actions">
+            <button type="submit">Salvar modelo</button>
+            <a class="button button-secondary" href="{{ route('modelos.index') }}">Cancelar</a>
+        </div>
     </form>
-</body>
-</html>
+@endsection

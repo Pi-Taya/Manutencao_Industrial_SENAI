@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Ordem de Serviço #{{ $ordem->id_ordem_servico }}</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'OS #' . $ordem->id_ordem_servico . ' - PITAYA Control')
+
+@section('content')
     @php
         $usuarioLogado = Auth::user();
         $perfilUsuario = $usuarioLogado->perfil->tipo_perfil ?? '';
@@ -15,18 +13,18 @@
     @endphp
 
     <h1>Ordem de Serviço #{{ $ordem->id_ordem_servico }}</h1>
-    <p><a href="{{ route('ordens.index') }}">Voltar para a Lista</a> | <a href="{{ route('dashboard') }}">Dashboard</a></p>
+    <p><a class="button button-secondary" href="{{ route('ordens.index') }}">Voltar para a lista</a></p>
 
     @if($osConcluida)
-        <p><strong>Esta Ordem de Serviço está CONCLUÍDA e bloqueada para alterações.</strong></p>
+        <p class="alert alert-warning"><strong>Esta Ordem de Serviço está CONCLUÍDA e bloqueada para alterações.</strong></p>
     @endif
 
     @if(session('success'))
-        <p><strong>[Sucesso]: {{ session('success') }}</strong></p>
+        <p class="alert alert-success"><strong>{{ session('success') }}</strong></p>
     @endif
 
     @if(session('error'))
-        <p><strong>[Atenção]: {{ session('error') }}</strong></p>
+        <p class="alert alert-error"><strong>{{ session('error') }}</strong></p>
     @endif
 
     @if($errors->any())
@@ -78,8 +76,8 @@
         <li><strong>Máquina:</strong> {{ $ordem->maquina->nome_maquina ?? 'N/A' }} (TAG: {{ $ordem->maquina->codigo_tag ?? 'N/A' }})</li>
         <li><strong>Setor:</strong> {{ $ordem->maquina->setor->nome_setor ?? 'N/A' }}</li>
         <li><strong>Solicitante:</strong> {{ $ordem->solicitante->nome_usuario ?? 'N/A' }}</li>
-        <li><strong>Data/Hora Abertura:</strong> {{ $ordem->data_abertura->format('d/m/Y H:i') }}</li>
-        <li><strong>Previsão Limite (SLA):</strong> {{ $ordem->data_previsao->format('d/m/Y H:i') }}</li>
+        <li><strong>Data/Hora Abertura:</strong> {{ $ordem->data_abertura?->format('d/m/Y H:i') ?? 'N/A' }}</li>
+        <li><strong>Previsão Limite (SLA):</strong> {{ $ordem->data_previsao?->format('d/m/Y H:i') ?? 'N/A' }}</li>
         <li><strong>Início Atendimento:</strong> {{ $ordem->data_inicio_atendimento ? $ordem->data_inicio_atendimento->format('d/m/Y H:i') : 'Não iniciado' }}</li>
         <li><strong>Data Fechamento:</strong> {{ $ordem->data_fechamento ? $ordem->data_fechamento->format('d/m/Y H:i') : 'Em aberto' }}</li>
         @if(!is_null($ordem->tempo_parada_minutos))
@@ -130,7 +128,7 @@
 
     @if($ordem->parecer)
         <ul>
-            <li><strong>Registrado em:</strong> {{ $ordem->parecer->data_registro->format('d/m/Y H:i') }}</li>
+            <li><strong>Registrado em:</strong> {{ $ordem->parecer->data_registro?->format('d/m/Y H:i') ?? 'N/A' }}</li>
             <li><strong>Perfil Responsável:</strong> {{ $ordem->parecer->perfil->tipo_perfil ?? 'N/A' }}</li>
             <li><strong>Condição Pós-Reparo:</strong> <strong>{{ $ordem->parecer->condicao_pos_reparo }}</strong></li>
             <li><strong>Laudo Técnico:</strong> {{ $ordem->parecer->descricao_laudo }}</li>
@@ -170,5 +168,4 @@
     @endif
 
     <hr>
-</body>
-</html>
+@endsection

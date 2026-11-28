@@ -1,86 +1,86 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Usuários e Técnicos</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Usuários - PITAYA Control')
+
+@section('content')
     <h1>Gestão de Usuários</h1>
-    <a href="{{ route('users.create') }}">+ Cadastrar Novo Usuário</a> | 
-    <a href="{{ route('dashboard') }}">Voltar ao Dashboard</a>
+    <div class="page-actions">
+        <a class="button" href="{{ route('users.create') }}">Cadastrar usuário</a>
+    </div>
 
     @if(session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     @if($errors->any())
-        <p style="color: red;">{{ $errors->first() }}</p>
+        <div class="alert alert-error">{{ $errors->first() }}</div>
     @endif
 
-    <!-- Form de Filtro e Pesquisa -->
-    <form method="GET" action="{{ route('users.index') }}" style="margin-top: 15px; margin-bottom: 15px;">
-        <input type="text" name="search" placeholder="Buscar por nome ou e-mail..." value="{{ request('search') }}">
-        
-        @if(auth()->user()->perfil->tipo_perfil === 'Administrador')
-            <select name="perfil_id">
-                <option value="">Todos os Perfis</option>
-                @foreach($perfis as $p)
-                    <option value="{{ $p->id_perfil }}" {{ request('perfil_id') == $p->id_perfil ? 'selected' : '' }}>
-                        {{ $p->tipo_perfil }}
-                    </option>
-                @endforeach
-            </select>
-        @endif
+    <form method="GET" action="{{ route('users.index') }}" class="card">
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="search">Busca</label>
+                <input type="text" id="search" name="search" placeholder="Nome ou e-mail" value="{{ request('search') }}">
+            </div>
 
-        <!-- Filtro de Especialidades oficial do Modelo Lógico -->
-        <select name="especialidade">
-            <option value="">Todas Especialidades</option>
-            @foreach(['Geral', 'Mecânica', 'Elétrica', 'Hidráulica'] as $esp)
-                <option value="{{ $esp }}" {{ request('especialidade') == $esp ? 'selected' : '' }}>{{ $esp }}</option>
-            @endforeach
-        </select>
+            @if(auth()->user()->perfil->tipo_perfil === 'Administrador')
+                <div class="form-field">
+                    <label for="perfil_id">Perfil</label>
+                    <select id="perfil_id" name="perfil_id">
+                        <option value="">Todos os perfis</option>
+                        @foreach($perfis as $p)
+                            <option value="{{ $p->id_perfil }}" {{ request('perfil_id') == $p->id_perfil ? 'selected' : '' }}>
+                                {{ $p->tipo_perfil }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
 
-        <button type="submit">Filtrar</button>
-        <a href="{{ route('users.index') }}">Limpar Filtros</a>
+            <div class="form-field">
+                <label for="especialidade">Especialidade</label>
+                <select id="especialidade" name="especialidade">
+                    <option value="">Todas</option>
+                    @foreach(['Geral', 'Mecânica', 'Elétrica', 'Hidráulica'] as $esp)
+                        <option value="{{ $esp }}" {{ request('especialidade') == $esp ? 'selected' : '' }}>{{ $esp }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit">Filtrar</button>
+            <a class="button button-secondary" href="{{ route('users.index') }}">Limpar filtros</a>
+        </div>
     </form>
 
-    <table border="1" cellpadding="8" style="border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Perfil</th>
-                <th>Especialidade</th>
-                <th>Turno</th>
-                <th>Setor</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($usuarios as $u)
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $u->nome_usuario }}</td>
-                    <td>{{ $u->email }}</td>
-                    <td>{{ $u->perfil->tipo_perfil ?? 'N/A' }}</td>
-                    <td>{{ $u->especialidade ?? 'N/A' }}</td>
-                    <td>{{ $u->turno->nome_turno ?? 'N/A' }}</td>
-                    <td>{{ $u->setor->nome_setor ?? 'N/A' }}</td>
-                    <td>{{ $u->status ? 'Ativo' : 'Inativo' }}</td>
-                    <td>
-                        <a href="{{ route('users.show', $u->id_usuario) }}">Visualizar</a> | 
-                        <a href="{{ route('users.edit', $u->id_usuario) }}">Editar</a>
-                    </td>
+                    <th>Nome</th><th>E-mail</th><th>Perfil</th><th>Especialidade</th>
+                    <th>Turno</th><th>Setor</th><th>Status</th><th>Ações</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="8">Nenhum usuário encontrado.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <div style="margin-top: 15px;">
-        {{ $usuarios->links() }}
+            </thead>
+            <tbody>
+                @forelse($usuarios as $u)
+                    <tr>
+                        <td>{{ $u->nome_usuario }}</td>
+                        <td>{{ $u->email }}</td>
+                        <td>{{ $u->perfil->tipo_perfil ?? 'N/A' }}</td>
+                        <td>{{ $u->especialidade ?? 'N/A' }}</td>
+                        <td>{{ $u->turno->nome_turno ?? 'N/A' }}</td>
+                        <td>{{ $u->setor->nome_setor ?? 'N/A' }}</td>
+                        <td><span class="badge {{ $u->status ? 'badge-success' : 'badge-danger' }}">{{ $u->status ? 'Ativo' : 'Inativo' }}</span></td>
+                        <td>
+                            <a href="{{ route('users.show', $u->id_usuario) }}">Visualizar</a>
+                            <a href="{{ route('users.edit', $u->id_usuario) }}">Editar</a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td class="empty-state" colspan="8">Nenhum usuário encontrado.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</body>
-</html>
+
+    {{ $usuarios->links() }}
+@endsection

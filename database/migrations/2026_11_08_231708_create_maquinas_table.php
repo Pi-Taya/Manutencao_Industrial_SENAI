@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('nome_maquina', 100);
             $table->dateTime('data_aquisicao');
             $table->boolean('status')->default(true);
+            $table->unsignedTinyInteger('criticidade')
+                ->default(3)
+                ->comment('Escala de criticidade de 1 (muito baixa) a 5 (crítica).');
             $table->timestamps();
 
             // Declaração das Constraints

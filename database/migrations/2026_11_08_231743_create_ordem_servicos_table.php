@@ -39,6 +39,9 @@ return new class extends Migration
             $table->dateTime('data_inicio_atendimento')->nullable();
             $table->dateTime('data_fechamento')->nullable();
             $table->integer('tempo_parada_minutos')->nullable();
+            $table->unsignedBigInteger('id_chamado')->nullable();
+            $table->dateTime('data_programada')->nullable();
+            $table->text('observacoes_pcm')->nullable();
 
             $table->timestamps();
         });

@@ -1,43 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Máquina</title>
-    <style>
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-        }
-        .modal-content {
-            background-color: #fff; 
-            margin: 10% auto; 
-            padding: 20px; 
-            border-radius: 5px; 
-            width: 400px; 
-        }
-        .close {
-            float: right; 
-            font-size: 20px; 
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .error-msg {
-            color: red;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-    </style>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Cadastrar máquina - PITAYA Control')
+
+@section('content')
     <h1>Cadastrar Nova Máquina</h1>
     <a href="{{ route('maquinas.index') }}">Voltar à Lista de Máquinas</a>
 
     @if ($errors->any())
-        <div style="color: red;">
+        <div class="alert alert-error">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -46,7 +16,7 @@
         </div>
     @endif
 
-    <form action="{{ route('maquinas.store') }}" method="POST" style="margin-top: 15px;">
+    <form action="{{ route('maquinas.store') }}" method="POST" class="card">
         @csrf
 
         <div>
@@ -202,6 +172,7 @@
             </div>
         </div>
 
+        @push('scripts')
         <script>
             function openModal(id) {
                 document.getElementById(id).style.display = 'block';
@@ -246,6 +217,6 @@
                 .catch(err => console.error('Erro na requisição:', err));
             }
         </script>
+        @endpush
     @endif
-</body>
-</html>
+@endsection

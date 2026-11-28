@@ -1,17 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Abrir Nova Ordem de Serviço</title>
-</head>
-<body>
-    <h1>Abrir Nova Ordem de Serviço</h1>
-    <p><a href="{{ route('ordens.index') }}">Voltar para a Lista</a> | <a href="{{ route('dashboard') }}">Dashboard</a></p>
+@extends('layouts.app')
 
-    <hr>
+@section('title', 'Abrir OS - PITAYA Control')
+
+@section('content')
+    <h1>Abrir Nova Ordem de Serviço</h1>
+    <p><a class="button button-secondary" href="{{ route('ordens.index') }}">Voltar para a lista</a></p>
 
     @if($errors->any())
-        <div>
+        <div class="alert alert-error">
             <strong>Corrija os seguintes erros:</strong>
             <ul>
                 @foreach($errors->all() as $erro)
@@ -22,7 +18,7 @@
         <hr>
     @endif
 
-    <form action="{{ route('ordens.store') }}" method="POST">
+    <form action="{{ route('ordens.store') }}" method="POST" class="card">
         @csrf
 
         <!-- Máquina -->
@@ -107,5 +103,4 @@
         <button type="submit">Registrar e Abrir OS</button>
         <a href="{{ route('ordens.index') }}">Cancelar</a>
     </form>
-</body>
-</html>
+@endsection

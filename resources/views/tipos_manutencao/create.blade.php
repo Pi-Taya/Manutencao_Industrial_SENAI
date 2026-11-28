@@ -1,37 +1,26 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Novo Tipo de Manutenção</title>
-</head>
-<body>
-    <h1>Cadastrar Tipo de Manutenção</h1>
-    <p><a href="{{ route('tipos-manutencao.index') }}">Voltar à Lista</a></p>
+@extends('layouts.app')
 
+@section('title', 'Novo tipo de manutenção - PITAYA Control')
+
+@section('content')
+    <h1>Cadastrar tipo de manutenção</h1>
     @if($errors->any())
-        <ul>
-            @foreach($errors->all() as $erro)
-                <li><strong>[Erro]:</strong> {{ $erro }}</li>
-            @endforeach
-        </ul>
+        <div class="alert alert-error"><ul>@foreach($errors->all() as $erro)<li>{{ $erro }}</li>@endforeach</ul></div>
     @endif
 
-    <form action="{{ route('tipos-manutencao.store') }}" method="POST">
+    <form action="{{ route('tipos-manutencao.store') }}" method="POST" class="card">
         @csrf
-
-        <div>
-            <label for="nome_manutencao"><strong>Tipo de Manutenção *:</strong></label><br>
-            <input type="text" name="nome_manutencao" id="nome_manutencao" value="{{ old('nome_manutencao') }}" maxlength="100" size="40" required placeholder="Ex: Lubrificação, Calibração, Emergencial...">
+        <div class="form-field">
+            <label for="nome_manutencao">Tipo de manutenção *</label>
+            <input type="text" name="nome_manutencao" id="nome_manutencao" value="{{ old('nome_manutencao') }}" maxlength="100" required placeholder="Ex.: Lubrificação, Calibração, Emergencial">
         </div>
-        <br>
-
-        <div>
-            <label for="descricao"><strong>Descrição:</strong></label><br>
-            <textarea name="descricao" id="descricao" rows="3" cols="50" maxlength="255" placeholder="Descreva a finalidade deste tipo de manutenção...">{{ old('descricao') }}</textarea>
+        <div class="form-field">
+            <label for="descricao">Descrição</label>
+            <textarea name="descricao" id="descricao" rows="3" maxlength="255" placeholder="Descreva a finalidade deste tipo de manutenção">{{ old('descricao') }}</textarea>
         </div>
-        <br>
-
-        <button type="submit">Salvar Tipo de Manutenção</button>
+        <div class="form-actions">
+            <button type="submit">Salvar tipo de manutenção</button>
+            <a class="button button-secondary" href="{{ route('tipos-manutencao.index') }}">Cancelar</a>
+        </div>
     </form>
-</body>
-</html>
+@endsection

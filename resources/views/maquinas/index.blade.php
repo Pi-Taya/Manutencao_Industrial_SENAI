@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Máquinas</title>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('title', 'Máquinas - PITAYA Control')
+
+@section('content')
     <h1>Máquinas Cadastradas</h1>
 
     <p>
@@ -14,14 +12,11 @@
         <a href="{{ route('dashboard') }}">Voltar ao Dashboard</a>
     </p>
 
-    @if(session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
-    @if(session('error'))
-        <p style="color: red;">{{ session('error') }}</p>
-    @endif
+    @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+    @if(session('error'))<div class="alert alert-error">{{ session('error') }}</div>@endif
 
-    <table border="1" cellpadding="8" style="margin-top: 15px; border-collapse: collapse;">
+    <div class="table-wrap">
+    <table>
         <thead>
             <tr>
                 <th>Código (TAG)</th>
@@ -43,7 +38,7 @@
                     <td>{{ $maquina->modelo->nome_modelo ?? 'N/A' }}</td>
                     <td>{{ $maquina->setor->nome_setor ?? 'N/A' }}</td>
                     <td>{{ $maquina->fabricante->nome_fabricante ?? 'N/A' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($maquina->data_aquisicao)->format('d/m/Y') }}</td>
+                    <td>{{ $maquina->data_aquisicao?->format('d/m/Y') ?? 'N/A' }}</td>
                     <td>
                         {{ $maquina->criticidade }} —
                         {{ [1 => 'Muito Baixa', 2 => 'Baixa', 3 => 'Moderada', 4 => 'Alta', 5 => 'Crítica'][$maquina->criticidade] ?? 'N/A' }}
@@ -57,7 +52,7 @@
                             <form action="{{ route('maquinas.destroy', $maquina->id_maquina) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta máquina?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" style="color: red; background: none; border: none; cursor: pointer; text-decoration: underline;">Excluir</button>
+                                <button type="submit" class="button-link">Excluir</button>
                             </form>
                         @endif
                     </td>
@@ -69,9 +64,9 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 
     <div style="margin-top: 15px;">
         {{ $maquinas->links() }}
     </div>
-</body>
-</html>
+@endsection
